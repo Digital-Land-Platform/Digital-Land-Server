@@ -1,0 +1,101 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: $DB_USER
+      POSTGRES_PASSWORD: $DB_PASSWORD
+      POSTGRES_DB: $DB_NAME
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - $DB_PORT:$DB_PORT
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", $POSTGRES_USER]
+      interval: 5sversion: '3.8'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: $DB_USER
+      POSTGRES_PASSWORD: $DB_PASSWORD
+      POSTGRES_DB: $DB_NAME
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - $DB_PORT:$DB_PORT
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", $POSTGRES_USER]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  app1:
+    build: .
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    ports:
+      - $PORT:$PORT
+    healthcheck:
+      test: ["CMD", "curl", "-f", $HEALTHCHECK_URL]
+      interval: 5m
+      timeout: 3s
+
+  app2:
+    build: .
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    ports:
+      - $PORT1:$PORT1
+    healthcheck:
+      test: ["CMD", "curl", "-f", $HEALTHCHECK_URL]
+      interval: 5m
+      timeout: 3s
+
+  haproxy:
+    image: haproxy:latest
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - 80:80
+      - 443:443
+
+volumes:
+  db-data:
+      timeout: 3s
+      retries: 5
+
+  app1:
+    build: .
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    ports:
+      - $PORT:$PORT
+    healthcheck:
+      test: ["CMD", "curl", "-f", $HEALTHCHECK_URL]
+      interval: 5m
+      timeout: 3s
+
+  app2:
+    build: .
+    env_file:
+      - ./.env
+    depends_on:
+    - db
+    ports:
+      - $PORT1:$PORT1
+    healthcheck:
+      test: ["CMD", "curl", "-f", $HEALTHCHECK_URL]
+      interval: 5m
+      timeout: 3s
+
+volumes:
+  db-data:
