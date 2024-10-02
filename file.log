@@ -1,0 +1,23 @@
+2024-08-04 13:48:26,074 - uvicorn.error - ERROR - Traceback (most recent call last):
+  File "/Users/ndevu/Desktop/TRIP TECH MOBILITY/mobility-server/src/startups/dbConn.py", line 26, in shutdown
+    print('==================================================>')
+  File "/Users/ndevu/.vscode/extensions/ms-python.debugpy-2024.0.0-darwin-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_io.py", line 40, in write
+    r.write(s)
+OSError: [Errno 5] Input/output error
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/ndevu/Desktop/TRIP TECH MOBILITY/mobility-server/venv/lib/python3.12/site-packages/starlette/routing.py", line 732, in lifespan
+    async with self.lifespan_context(app) as maybe_state:
+  File "/Users/ndevu/Desktop/TRIP TECH MOBILITY/mobility-server/venv/lib/python3.12/site-packages/starlette/routing.py", line 611, in __aexit__
+    await self._router.shutdown()
+  File "/Users/ndevu/Desktop/TRIP TECH MOBILITY/mobility-server/venv/lib/python3.12/site-packages/starlette/routing.py", line 719, in shutdown
+    await handler()
+  File "/Users/ndevu/Desktop/TRIP TECH MOBILITY/mobility-server/src/startups/dbConn.py", line 30, in shutdown
+    print('==================================================>')
+  File "/Users/ndevu/.vscode/extensions/ms-python.debugpy-2024.0.0-darwin-x64/bundled/libs/debugpy/_vendored/pydevd/_pydevd_bundle/pydevd_io.py", line 40, in write
+    r.write(s)
+OSError: [Errno 5] Input/output error
+
+2024-08-04 13:48:26,074 - uvicorn.error - ERROR - Application shutdown failed. Exiting.
