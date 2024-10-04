@@ -49,7 +49,7 @@ The system enables landowners to list their properties, upload multimedia conten
 
    ```bash
    git clone https://github.com/
-   cd green-mobility-solution
+   cd 
    ```
 
 2. Set up virtual environment:
