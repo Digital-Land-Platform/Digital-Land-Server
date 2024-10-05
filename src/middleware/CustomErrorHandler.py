@@ -1,26 +1,14 @@
-from fastapi import Request
+# src/middleware/CustomErrorHandler.py
+
+from fastapi import Request, HTTPException
 from fastapi.responses import JSONResponse
-from starlette.exceptions import HTTPException as StarletteHTTPException
 
-
-# Define a custom exception class
-class CustomException(Exception):
+class CustomException(HTTPException):
     def __init__(self, status_code: int, detail: str):
-        self.status_code = status_code
-        self.detail = detail
+        super().__init__(status_code=status_code, detail=detail)
 
-
-# Define the error handler
 async def custom_exception_handler(request: Request, exc: CustomException):
     return JSONResponse(
         status_code=exc.status_code,
-        content={"message": exc.detail},
-    )
-
-
-# handle FastAPI's built-in HTTPException
-async def http_exception_handler(request: Request, exc: StarletteHTTPException):
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"message": exc.detail},
+        content={"detail": exc.detail},
     )
