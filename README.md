@@ -48,8 +48,8 @@ The system enables landowners to list their properties, upload multimedia conten
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/
-   cd 
+   git clone https://github.com/Digital-Land-Platform/Digital-Land-Server.git
+   cd Digital-Land-Server
    ```
 
 2. Set up virtual environment:
@@ -59,13 +59,19 @@ The system enables landowners to list their properties, upload multimedia conten
     source env/bin/activate  # On Windows use `env\Scripts\activate`
     ```
 
-3. Run database migrations:
+3. Install all dependencies by:
+
+   ```bash
+   pip3 install
+   ```
+   
+4. Run database migrations:
 
 ```bash
     alembic upgrade head
 ```
 
-4. Start the backend server:
+5. Start the backend server:
 
 ```bash
     uvicorn main:app --reload
@@ -79,9 +85,15 @@ pytest
 
 ### Contributing
 
-We welcome contributions from the Team. Please read our Contributing Guidelines and Code of Conduct before making a pull request.
+We welcome contributions from the Team. Please,read our Contributing Guidelines and Code of Conduct before making a pull request.
 
-### N.B: Remember to run pre-commit tests before releasing your changes
+### Contributing Guidelines and Code of Conduct:
+
+- You have to make a new branch every time you are going to work either on a new feature or issue
+- Changes must be reviewed and approved by the CTO before merging them into the default branch.
+- All PR must be merged by the CTO only
+- PR must be reviewed by the Peers before being merged.
+- Remember to run pre-commit tests before releasing your changes
 
 Just run:
 
