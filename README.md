@@ -85,15 +85,15 @@ pytest
 
 ### Contributing
 
-We welcome contributions from the Team. Please,read our Contributing Guidelines and Code of Conduct before making a pull request.
+We welcome contributions from the Team. Please, read our Contributing Guidelines and Code of Conduct before making a pull request.
 
 ### Contributing Guidelines and Code of Conduct:
 
 - You have to make a new branch every time you are going to work either on a new feature or issue
 - Changes must be reviewed and approved by the CTO before merging them into the default branch.
 - All PR must be merged by the CTO only
-- PR must be reviewed by the Peers before being merged.
-- Remember to run pre-commit tests before releasing your changes
+- PR has to be reviewed by the Peers before being merged `(Recommended)`.
+- It would be better to run pre-commit tests before releasing your changes
 
 Just run:
 
