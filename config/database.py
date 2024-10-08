@@ -10,15 +10,21 @@ load_dotenv()
 
 DB_CONFIG = os.getenv("DB_CONFIG")
 
-if not DB_CONFIG:
-    DEV_DB_HOST = os.getenv("DEV_DB_HOST")
-    DEV_DB_PORT = os.getenv("DEV_DB_PORT")
-    DEV_DB_USER = os.getenv("DEV_DB_USER")
-    DEV_DB_PASS = os.getenv("DEV_DB_PASS")
-    DEV_DB_NAME = os.getenv("DEV_DB_NAME")
+# Database configuration
+DEV_DB_HOST = os.getenv("DEV_DB_HOST")
+DEV_DB_PORT = os.getenv("DEV_DB_PORT")
+DEV_DB_USER = os.getenv("DEV_DB_USER")
+DEV_DB_PASS = os.getenv("DEV_DB_PASS")
+DEV_DB_NAME = os.getenv("DEV_DB_NAME")
 
+if not DB_CONFIG:
     DB_CONFIG = f"postgresql+asyncpg://{DEV_DB_USER}:{DEV_DB_PASS}@{DEV_DB_HOST}:{DEV_DB_PORT}/{DEV_DB_NAME}"
-else:
+
+elif not DEV_DB_HOST \
+        and not DEV_DB_PORT \
+            and not DEV_DB_USER \
+                and not DEV_DB_PASS \
+                    and not DEV_DB_NAME:
     raise ValueError('Database variables are not defined in .env file.')
 
 print("==================================================>")
