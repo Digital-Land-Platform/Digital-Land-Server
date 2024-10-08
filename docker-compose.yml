@@ -13,9 +13,11 @@ services:
       - $DB_PORT:$DB_PORT
     healthcheck:
       test: ["CMD", "pg_isready", "-U", $POSTGRES_USER]
-      interval: 5sversion: '3.8'
+      interval: 5s
+      version: '3.8'
 
-services:
+
+services2:
   db:
     image: postgres
     environment:
@@ -97,5 +99,5 @@ volumes:
       interval: 5m
       timeout: 3s
 
-volumes:
+volumes2:
   db-data:

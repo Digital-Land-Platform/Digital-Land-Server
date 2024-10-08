@@ -62,10 +62,24 @@ The system enables landowners to list their properties, upload multimedia conten
 3. Install all dependencies by:
 
    ```bash
-   pip3 install
+   python -m pip install --upgrade pip
+   ```  
+
+   ```bash
+   pip install -r requirements.txt
    ```
    
 4. Run database migrations:
+
+Create alembic.ini file
+
+```bash
+    alembic init alembic
+```
+
+Copy /version, env.py and script.py.mako into /src/alembic
+
+Make sure that `script_location = src/alembic` in  alembic.ini in your root directory.
 
 ```bash
     alembic upgrade head
