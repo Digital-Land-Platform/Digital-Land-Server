@@ -7,10 +7,10 @@ from fastapi.testclient import TestClient
 # Add the root directory to the PYTHONPATH
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from main import init_app
+from main import app
 
 # Initialize the app
-app = init_app()
+app = app
 
 def test_home_route():
     print("Running test_home_route")
