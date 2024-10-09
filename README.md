@@ -121,7 +121,7 @@ The names of the items under each column should be written according to the styl
 | PascalCase        | lower_snake_case | UPPER_SNAKE_CASE | camelCase        | khebab-case      |
 |  ---------------- | ---------------- | ---------------- | ---------------- | ---------------- |
 | Classes           | methods          | Constants        | Functions        | docker-compose   |
-|                   | variables        |        |      |                  |
+|                   | variables        |                  |                  | git-branch  |
 |                   | schemas/tables   |        |      |                  |
 |                   | attributes/columns |        |      |                  |
 |                   | route_methods    |        |      |                  |
