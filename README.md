@@ -103,17 +103,23 @@ Just run:
     pre-commit install
 ```
 
+
 ---
 
-<h3 id="dev_guide">Develop Guidelines</h3>
+<h3 id="dev_guide">Developer Guidelines</h3>
 
 #### Naming Conventions
 
-- The *database* name should be **digitalLandDb** for consistency.
-- *Function* names should be written as action words or phrases.
-- *Controllers* should be independent of each other in respective folders. Each folder should contain the files, __init__.py, index.py, mutation.py, query.py, and services.py. *Controller classes* in these files should be appended with the file names and written in **PascalCase** as in *UserMutation*, *UserQuery*, and *UserService*.
-- *Model file* names should be written in **PascalCase**.
-- *Middleware file* names should be written in **PascalCase** and be appended with the word, *Handler*, as in *CustomErrorHandler*.
+1. The *database* name should be **digitalLandDb** for consistency.
+
+2. *Function* names should be written as action words or phrases.
+
+3. *Controllers* should be independent of each other in respective folders. Each folder should contain the files, __init__.py, index.py, mutation.py, query.py, and services.py. *Controller classes* in these files should be appended with the file names and written in **PascalCase** as in *UserMutation*, *UserQuery*, and *UserService*.
+
+4. *Model file* names should be written in **PascalCase**.
+
+5. *Middleware file* names should be written in **PascalCase** and be appended with the word, *Handler*, as in *CustomErrorHandler*.
+
 
 The headers of the following table make up the naming standards to be adopted in developing the system.
 The names of the items under each column should be written according to the style of the table header for that column.
@@ -128,6 +134,7 @@ The names of the items under each column should be written according to the styl
 |                   | test_functions   |        |      |                  |
 
 ---
+
 
 #### Reporting Issues
 
