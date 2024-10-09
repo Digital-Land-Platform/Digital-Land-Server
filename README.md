@@ -15,6 +15,8 @@ The Digital Land Platform is designed to facilitate the buying and selling of la
 
 The system enables landowners to list their properties, upload multimedia content to showcase the land, and manage the selling process. Buyers can browse listings, verify their identity, and purchase properties, receiving immediate ownership documents upon completion. The platform also integrates with external APIs for property verification, loan status checks, and tax calculations and approved land for sale.
 
+Click here to get the latest -> <a href="#dev_guide">Developer Guidelines</a>
+
 ## Technology Stack
 
 - **Backend:**
@@ -100,6 +102,32 @@ Just run:
 ```bash
     pre-commit install
 ```
+
+---
+
+<h3 id="dev_guide">Develop Guidelines</h3>
+
+#### Naming Conventions
+
+- The *database* name should be **digitalLandDb** for consistency.
+- *Function* names should be written as action words or phrases.
+- *Controllers* should be independent of each other in respective folders. Each folder should contain the files, __init__.py, index.py, mutation.py, query.py, and services.py. *Controller classes* in these files should be appended with the file names and written in **PascalCase** as in *UserMutation*, *UserQuery*, and *UserService*.
+- *Model file* names should be written in **PascalCase**.
+- *Middleware file* names should be written in **PascalCase** and be appended with the word, *Handler*, as in *CustomErrorHandler*.
+
+The headers of the following table make up the naming standards to be adopted in developing the system.
+The names of the items under each column should be written according to the style of the table header for that column.
+
+| PascalCase        | lower_snake_case | UPPER_SNAKE_CASE | camelCase        | khebab-case      |
+|  ---------------- | ---------------- | ---------------- | ---------------- | ---------------- |
+| Classes           | methods          | Constants        | Functions        | docker-compose   |
+|                   | variables        |        |      |                  |
+|                   | schemas/tables   |        |      |                  |
+|                   | attributes/columns |        |      |                  |
+|                   | route_methods    |        |      |                  |
+|                   | test_functions   |        |      |                  |
+
+---
 
 #### Reporting Issues
 
