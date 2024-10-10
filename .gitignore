@@ -33,3 +33,6 @@ static/uploads/
 # Build Artifacts
 docker-compose.override.yml
 
+# Others
+MYDOC.md
+
