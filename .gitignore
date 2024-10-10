@@ -1,7 +1,38 @@
-
+# Python Environment Files
 venv/
 env/
+.env/
+
+# Compiled Python Files
+__pycache__/
+*.pyc
+*.pyo
+
+# Configuration Files
 .env
+.env.*
+
+# Database Files
+*.db
+
+# Test Coverage Reports
+.coverage
+htmlcov/
+
+# IDE or Editor Specific Files
+.idea/
+.vscode/
+
+# Logs and Temporary Files
+*.log
+tmp/
+
+# Static Files or Media
+static/uploads/
+
+# Build Artifacts
+docker-compose.override.yml
 
 # Others
 MYDOC.md
+
