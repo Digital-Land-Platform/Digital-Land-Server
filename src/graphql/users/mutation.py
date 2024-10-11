@@ -6,12 +6,13 @@ from src.models import User  # Import your User model
 from config.database import db  # Import your database session
 from sqlalchemy.exc import IntegrityError
 from src.graphql.users.types import CreateUserInput
+from strawberry.types import Info
 
     
 @strawberry.type
 class UserMutation:
     @strawberry.mutation
-    async def create_user(self, info, input: CreateUserInput) -> str:
+    async def create_user(self, info: Info, input: CreateUserInput) -> str:
         async for session in db.get_db():
             # Hash the password for security
             hashed_password = bcrypt.hashpw(input.password.encode('utf-8'), bcrypt.gensalt())
