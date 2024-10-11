@@ -2,6 +2,8 @@
 
 This documentation is intended to guide developers working on the Digital Land Platform regarding the structure of the Property entity using SQLAlchemy and Strawberry. Each field is explained to provide a clear understanding of what is expected when working with property listings.
 
+`Property` is defined as a fixed asset like land, plot, house, etc
+
 ## Property Entity Fields
 
 #### 1. id (String, UUID):
