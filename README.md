@@ -115,6 +115,25 @@ Just run:
     pre-commit install
 ```
 
+
+---------------------------
+### User Registration API Documentation
+---------------------------
+
+graphql/
+├── __init__.py       # Main package for the GraphQL API, integrating user and other modules.
+├── index.py          # Main entry for GraphQL
+└── users/
+    ├── __init__.py   # Main package for the User API, integrating user modules.
+    ├── index.py      # Entry point for user-related GraphQL logic
+    ├── mutation.py    # User mutations (e.g., create, update)
+    ├── query.py       # User queries (e.g., get users)  
+    ├── services.py     # Business logic related to users
+    └── types.py       # User GraphQL type definitions
+
+
+<hr>
+
 #### Reporting Issues
 
 If you find any issues, please report them using the GitHub Issues feature.
