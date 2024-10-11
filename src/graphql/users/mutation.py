@@ -1,14 +1,25 @@
 import strawberry
-from .schemas import UserType, CreateUserInput
-from .resolvers import create_user
-from .database import SessionLocal
+import bcrypt
 
+from sqlalchemy.orm import Session
+from src.models import User  # Import your User model
+from config.database import db  # Import your database session
+from sqlalchemy.exc import IntegrityError
+from src.graphql.users.types import CreateUserInput
+
+    
 @strawberry.type
 class UserMutation:
     @strawberry.mutation
-    async def register_user(self, input: CreateUserInput) -> UserType:
-        db = SessionLocal()
-        user = await create_user(input, db)
-        return user
-
-schema = strawberry.Schema(mutation=Mutation)
+    async def create_user(self, info, input: CreateUserInput) -> str:
+        async for session in db.get_db():
+            # Hash the password for security
+            hashed_password = bcrypt.hashpw(input.password.encode('utf-8'), bcrypt.gensalt())
+            new_user = User(name=input.name, email=input.email, password=hashed_password.decode('utf-8'), role=input.role)
+            session.add(new_user)
+            try:
+                await session.commit()  # Commit the transaction
+                return "User created successfully"
+            except IntegrityError:
+                await session.rollback()  # Roll back in case of error
+                return "User already exists"

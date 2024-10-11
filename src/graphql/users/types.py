@@ -1,5 +1,5 @@
 import strawberry
-from .models import UserRole
+from src.models.User import UserRole
 
 @strawberry.type
 class UserType:

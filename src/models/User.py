@@ -1,11 +1,11 @@
-from sqlalchemy import Column, String, Enum
-
 from .Base import Base
+from sqlalchemy import Column, String, Enum as SQLAlchemyEnum
+import strawberry
+from enum import Enum
 
-import enum
-
-
-class UserRole(enum.Enum):
+# Define the UserRole enum using Strawberry's Enum
+@strawberry.enum
+class UserRole(Enum):
     LAND_OWNER = "Land Owner"
     BUYER = "Buyer"
     NOTARY = "Notary"
@@ -16,4 +16,4 @@ class User(Base):
     name = Column(String, index=True)
     email = Column(String, unique=True, index=True)
     password = Column(String)
-    role = Column(Enum(UserRole))
+    role: UserRole = Column(SQLAlchemyEnum(UserRole))
