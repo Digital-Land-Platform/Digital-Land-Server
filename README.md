@@ -1,12 +1,5 @@
 # Digital Land Platform
 
-[![Digital-Land-Server CI](https://github.com/Digital-Land-Platform/Digital-Land-Server/actions/workflows/ci.yml/badge.svg)](https://github.com/Digital-Land-Platform/Digital-Land-Server/actions/workflows/ci.yml)
-&nbsp;&nbsp;
-<!-- [![Build Status](https://github.com/Digital-Land-Platform/Digital-Land-Server/workflows/ci.yml/badge.svg)](https://github.com/Digital-Land-Platform/Digital-Land-Server/actions)-->&nbsp;&nbsp;
-[![Test Coverage](https://codecov.io/gh/Digital-Land-Platform/Digital-Land-Server/branch/develop/graph/badge.svg)](https://codecov.io/gh/Digital-Land-Platform/Digital-Land-Server/)&nbsp;&nbsp;
-<!-- [![Code Quality](https://api.codeclimate.com/v1/badges/yourbadgeid/maintainability)](https://codeclimate.com/github/Digital-Land-Platform/Digital-Land-Server/maintainability)-->&nbsp;&nbsp;
-![Auto Assign](https://github.com/Digital-Land-Platform/Digital-Land-Server/actions/workflows/auto-assign.yml/badge.svg)
-
 ## Description
 
 The Digital Land Platform is designed to facilitate the buying and selling of land properties (plots, land, and houses). A key advantage of the platform is that buyers receive the ownership document instantly after purchasing the land, making it a significant improvement over existing systems and global real estate development.
@@ -14,6 +7,8 @@ The Digital Land Platform is designed to facilitate the buying and selling of la
 ## Overview
 
 The system enables landowners to list their properties, upload multimedia content to showcase the land, and manage the selling process. Buyers can browse listings, verify their identity, and purchase properties, receiving immediate ownership documents upon completion. The platform also integrates with external APIs for property verification, loan status checks, and tax calculations and approved land for sale.
+
+Click here to get the latest -> <a href="#dev_guide">Developer Guidelines</a>
 
 ## Technology Stack
 
@@ -101,9 +96,69 @@ Just run:
     pre-commit install
 ```
 
+---
+
+<h3 id="dev_guide">Developer Guidelines</h3>
+
+#### Naming Conventions
+
+1. The *database* name should be **digitalLandDb** for consistency.
+
+2. *Function* names should be written as action words or phrases.
+
+3. *Controllers* should be independent of each other in respective folders. Each folder should contain the files, __init__.py, index.py, mutation.py, query.py, and services.py. *Controller classes* in these files should be appended with the file names and written in **PascalCase** as in *UserMutation*, *UserQuery*, and *UserService*.
+
+4. *Model file* names should be written in **PascalCase**.
+
+5. *Middleware file* names should be written in **PascalCase** and be appended with the word, *Handler*, as in *CustomErrorHandler*.
+
+
+The headers of the following table make up the naming standards to be adopted in developing the system.
+The names of the items under each column should be written according to the style of the table header for that column.
+
+| PascalCase        | lower_snake_case | UPPER_SNAKE_CASE | camelCase        | khebab-case      |
+|  ---------------- | ---------------- | ---------------- | ---------------- | ---------------- |
+| Classes           | methods          | Constants        | Functions        | docker-compose   |
+|                   | variables        |                  |                  | git-branch  |
+|                   | schemas/tables   |        |      |                  |
+|                   | attributes/columns |        |      |                  |
+|                   | route_methods    |        |      |                  |
+|                   | test_functions   |        |      |                  |
+
+---
+
+### README Updates
+
+Every developer must update the README file with their updates every time they make changes to the project. This ensures that the documentation stays current and useful for all team members.
+
+---
+
+### Environment Variables Specification
+
+To ensure consistency and security, all environment variables should be specified in a .env file. Below are the environment variables required for the project, along with explanations:
+
+- `APP_ENV:` Specifies the environment in which the application is running (e.g., development, production).
+- `DB_NAME:` The name of the database.
+- `DB_PASSWORD:` The password for the database user.
+- `DB_USER:` The username for the database.
+- `DB_CONFIG:` The database connection string.
+
+
+```md
+APP_ENV=********************************
+DB_NAME=********************************
+DB_PASSWORD=********************************
+DB_USER=********************************
+DB_CONFIG=postgresql+asyncpg://<username>:<password>@<host>:<port>/<database>
+```
+
+---
+
 #### Reporting Issues
 
 If you find any issues, please report them using the GitHub Issues feature.
+
+---
 
 #### Badges
 
