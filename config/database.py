@@ -30,9 +30,11 @@ def show_db_works():
     print("==================================================>")
 
 if DB_CONFIG:
+    # Show that the DB is being initialized
     show_db_works()
     
-elif not DB_CONFIG:    
+elif not DB_CONFIG:  
+    # Only load these other ones if DB_CONFIG is not set - takes care of redundancy  
     DEV_DB_HOST = os.getenv("DEV_DB_HOST")
     DEV_DB_PORT = os.getenv("DEV_DB_PORT")
     DEV_DB_USER = os.getenv("DEV_DB_USER")
@@ -41,9 +43,11 @@ elif not DB_CONFIG:
 
     DB_CONFIG = f"postgresql+asyncpg://{DEV_DB_USER}:{DEV_DB_PASS}@{DEV_DB_HOST}:{DEV_DB_PORT}/{DEV_DB_NAME}"
 
+    # Show that the DB is being initialized
     show_db_works()
 
 else:
+    # Throw an error if DB_CONFIG is not set both ways above
     raise ValueError('Database variables are not defined in .env file.')
 
 # Class to manage database sessions
