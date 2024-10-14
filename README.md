@@ -170,9 +170,10 @@ The names of the items under each column should be written according to the styl
 
 The documentation should follow the following format:
 
-=======
+<div style="border: 4px groove dodgerblue; border-radius: 5px; margin-bottom: 20px;">
 
-#### Task Title
+<h4 style="text-decoration: underline;">Task Title</h4>
+
 **Description:**
 A brief overview of the task.
 
@@ -185,7 +186,7 @@ Instructions on how to test or validate the task.
 **Other Important things to note**
 - Any additional information or considerations relevant to the task.
 
-========
+</div>
 
 ---
 
