@@ -108,17 +108,56 @@ Just run:
 
 <h3 id="dev_guide">Developer Guidelines</h3>
 
+**Database Name**: The *database* name should be **digitalLandDb** for consistency.
+
+#### Environment variables
+
+```
+# Database connection string for the application
+DB_CONFIG=postgresql+asyncpg://<postgres>:<DEV_DB_PASS>@<DEV_DB_HOST>:<DEV_DB_PORT>/digitalLandDb
+
+# Hostname or IP address of the database server
+DEV_DB_HOST=********************************
+
+# Port number on which the database server is listening
+DEV_DB_PORT=********************************
+
+# Username for connecting to the database
+DEV_DB_USER=********************************
+
+# Password for the database user
+DEV_DB_PASS=********************************
+
+# Name of the database to connect to
+DEV_DB_NAME=********************************
+
+# Environment in which the application is running (e.g., development, production)
+APP_ENV=********************************
+
+# Name of the database (used for configuration or logging)
+DB_NAME=ditalLandDb
+
+# Password for the database (used for configuration or logging)
+DB_PASSWORD=********************************
+
+# Username for the application, typically for connecting to external services
+DB_USER=********************************
+
+# Secret key used for securing sessions or cryptographic operations
+SECRET_KEY=********************************
+
+
+```
+
 #### Naming Conventions
 
-1. The *database* name should be **digitalLandDb** for consistency.
+1. *Function* names should be written as action words or phrases.
 
-2. *Function* names should be written as action words or phrases.
+2. *Controllers* should be independent of each other in respective folders. Each folder should contain the files, __init__.py, index.py, mutation.py, query.py, and services.py. *Controller classes* in these files should be appended with the file names and written in **PascalCase** as in *UserMutation*, *UserQuery*, and *UserService*.
 
-3. *Controllers* should be independent of each other in respective folders. Each folder should contain the files, __init__.py, index.py, mutation.py, query.py, and services.py. *Controller classes* in these files should be appended with the file names and written in **PascalCase** as in *UserMutation*, *UserQuery*, and *UserService*.
+3. *Model file* names should be written in **PascalCase**.
 
-4. *Model file* names should be written in **PascalCase**.
-
-5. *Middleware file* names should be written in **PascalCase** and be appended with the word, *Handler*, as in *CustomErrorHandler*.
+4. *Middleware file* names should be written in **PascalCase** and be appended with the word, *Handler*, as in *CustomErrorHandler*.
 
 
 The headers of the following table make up the naming standards to be adopted in developing the system.
@@ -132,6 +171,13 @@ The names of the items under each column should be written according to the styl
 |                   | attributes/columns |        |      |                  |
 |                   | route_methods    |        |      |                  |
 |                   | test_functions   |        |      |                  |
+
+
+#### Important Note: 
+**Developers should update the README file with their updates. This is to serve as a documentation for each task completed.**
+
+The documentation should follow the following format:
+
 
 ---
 
