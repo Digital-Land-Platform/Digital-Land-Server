@@ -18,14 +18,15 @@ DEV_DB_PASS = os.getenv("DEV_DB_PASS")
 DEV_DB_NAME = os.getenv("DEV_DB_NAME")
 
 if not DB_CONFIG:
-    DB_CONFIG = f"postgresql+asyncpg://{DEV_DB_USER}:{DEV_DB_PASS}@{DEV_DB_HOST}:{DEV_DB_PORT}/{DEV_DB_NAME}"
+    if DEV_DB_HOST \
+            and DEV_DB_PORT \
+                and DEV_DB_USER \
+                    and DEV_DB_PASS \
+                        and DEV_DB_NAME:
+         DB_CONFIG = f"postgresql+asyncpg://{DEV_DB_USER}:{DEV_DB_PASS}@{DEV_DB_HOST}:{DEV_DB_PORT}/{DEV_DB_NAME}"
 
-elif not DEV_DB_HOST \
-        and not DEV_DB_PORT \
-            and not DEV_DB_USER \
-                and not DEV_DB_PASS \
-                    and not DEV_DB_NAME:
-    raise ValueError('Database variables are not defined in .env file.')
+    else:
+        raise ValueError('Database variables are not defined in .env file.')
 
 print("==================================================>")
 print("Initializing database...")

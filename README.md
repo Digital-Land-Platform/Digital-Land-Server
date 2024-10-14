@@ -1,12 +1,5 @@
 # Digital Land Platform
 
-[![Digital-Land-Server CI](https://github.com/Digital-Land-Platform/Digital-Land-Server/actions/workflows/ci.yml/badge.svg)](https://github.com/Digital-Land-Platform/Digital-Land-Server/actions/workflows/ci.yml)
-&nbsp;&nbsp;
-<!-- [![Build Status](https://github.com/Digital-Land-Platform/Digital-Land-Server/workflows/ci.yml/badge.svg)](https://github.com/Digital-Land-Platform/Digital-Land-Server/actions)-->&nbsp;&nbsp;
-[![Test Coverage](https://codecov.io/gh/Digital-Land-Platform/Digital-Land-Server/branch/develop/graph/badge.svg)](https://codecov.io/gh/Digital-Land-Platform/Digital-Land-Server/)&nbsp;&nbsp;
-<!-- [![Code Quality](https://api.codeclimate.com/v1/badges/yourbadgeid/maintainability)](https://codeclimate.com/github/Digital-Land-Platform/Digital-Land-Server/maintainability)-->&nbsp;&nbsp;
-![Auto Assign](https://github.com/Digital-Land-Platform/Digital-Land-Server/actions/workflows/auto-assign.yml/badge.svg)
-
 ## Description
 
 The Digital Land Platform is designed to facilitate the buying and selling of land properties (plots, land, and houses). A key advantage of the platform is that buyers receive the ownership document instantly after purchasing the land, making it a significant improvement over existing systems and global real estate development.
@@ -103,7 +96,6 @@ Just run:
     pre-commit install
 ```
 
-
 ---
 
 <h3 id="dev_guide">Developer Guidelines</h3>
@@ -185,6 +177,8 @@ The documentation should follow the following format:
 #### Reporting Issues
 
 If you find any issues, please report them using the GitHub Issues feature.
+
+---
 
 #### Badges
 
