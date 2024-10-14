@@ -170,6 +170,22 @@ The names of the items under each column should be written according to the styl
 
 The documentation should follow the following format:
 
+=======
+
+#### Task Title
+**Description:**
+A brief overview of the task.
+
+**Acceptance Criteria:**
+- List of acceptance criteria to validate the task.
+
+**Validation:**
+Instructions on how to test or validate the task.
+
+**Other Important things to note**
+- Any additional information or considerations relevant to the task.
+
+========
 
 ---
 
