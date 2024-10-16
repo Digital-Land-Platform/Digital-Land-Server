@@ -1,5 +1,6 @@
 from sqlalchemy import Column, String, Enum
 from .UserRole import UserRole
+from sqlalchemy import Column, String
 
 from .Base import Base
 
