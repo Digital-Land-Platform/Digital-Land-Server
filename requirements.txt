@@ -27,6 +27,8 @@ pydantic_core==2.20.1
 Pygments==2.18.0
 pytest==8.3.2 
 python-dotenv==1.0.1
+python-jose==3.3.0
+requests==2.32.3
 SQLAlchemy>=2.0.14
 sqlmodel==0.0.21
 strawberry-graphql==0.243.0
