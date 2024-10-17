@@ -7,6 +7,8 @@ env/
 __pycache__/
 *.pyc
 *.pyo
+*.cfg
+*.h
 
 # Configuration Files
 .env
@@ -35,4 +37,3 @@ docker-compose.override.yml
 
 # Others
 MYDOC.md
-

@@ -3,11 +3,13 @@
 import strawberry
 from src.graphql.land.mutation import LandMutation
 from src.graphql.land.query import LandQuery
+from .users.mutation import UserMutation
+from .users.query import UserQuery
 
 @strawberry.type
-class Mutation(LandMutation):
+class Mutation(UserMutation, LandMutation):
     pass
 
 @strawberry.type
-class Query(LandQuery):
+class Query(UserQuery, LandQuery):
     pass
