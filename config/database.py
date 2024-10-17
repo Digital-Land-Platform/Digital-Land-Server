@@ -4,18 +4,18 @@ from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import text
-from sqlmodel import SQLModel
+from src.models.Base import BaseModel
 
 load_dotenv()
 
 DB_CONFIG = os.getenv("DB_CONFIG")
 
 # Database configuration
-DEV_DB_HOST = os.getenv("DEV_DB_HOST")
-DEV_DB_PORT = os.getenv("DEV_DB_PORT")
-DEV_DB_USER = os.getenv("DEV_DB_USER")
-DEV_DB_PASS = os.getenv("DEV_DB_PASS")
-DEV_DB_NAME = os.getenv("DEV_DB_NAME")
+DEV_DB_HOST = os.getenv("DEV_DB_HOST", "localhost")
+DEV_DB_PORT = os.getenv("DEV_DB_PORT", "5432")
+DEV_DB_USER = os.getenv("DEV_DB_USER", "test_user")
+DEV_DB_PASS = os.getenv("DEV_DB_PASS", "test_pass")
+DEV_DB_NAME = os.getenv("DEV_DB_NAME", "test_db")
 
 if not DB_CONFIG:
     if DEV_DB_HOST \
@@ -46,11 +46,11 @@ class DatabaseSession:
     # Generating models into a database
     async def create_all(self):
         async with self.engine.begin() as conn:
-            await conn.run_sync(SQLModel.metadata.create_all)
+            await conn.run_sync(BaseModel.metadata.create_all)
 
     async def drop_all(self):
         async with self.engine.begin() as conn:
-            await conn.run_sync(SQLModel.metadata.drop_all)
+            await conn.run_sync(BaseModel.metadata.drop_all)
 
     # close connection
     async def close(self):

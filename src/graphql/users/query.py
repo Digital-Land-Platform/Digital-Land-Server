@@ -125,6 +125,7 @@ class UserQuery:
         Raises:
             Exception: If there is a failure in retrieving user data from the database.
         """
+
         try:
             found_user = await user_service.get_user_by_email(email)
             return UserType.from_model(found_user)
@@ -150,4 +151,4 @@ class UserQuery:
             return UserType.from_model(found_user)
         except Exception as e:
             raise Exception(f"Failed to get user: {e}")
-    
+

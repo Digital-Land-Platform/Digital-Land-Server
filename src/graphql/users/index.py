@@ -31,7 +31,6 @@ class UserRole(Enum):
 class UserMetadata:
     name: str
     email: str
-    password: str
     user_role: UserRole
 
 @strawberry.input

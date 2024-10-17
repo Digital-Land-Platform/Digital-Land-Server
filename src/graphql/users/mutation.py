@@ -28,7 +28,6 @@ class UserMutation:
             user_dict = {
                 "name": user_input.user.name,
                 "email": user_input.user.email,
-                "password": user_input.user.password,
                 "role": user_role
             }
             exist_user = await userService.get_user_by_email(user_dict["email"])
@@ -59,7 +58,6 @@ class UserMutation:
             user_dict = {
                 "name": user_input.user.name,
                 "email": user_input.user.email,
-                "password": user_input.user.password,
                 "role": user_role
             }
             print("User dict: ", user_dict)
