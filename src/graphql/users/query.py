@@ -151,3 +151,4 @@ class UserQuery:
             return UserType.from_model(found_user)
         except Exception as e:
             raise Exception(f"Failed to get user: {e}")
+

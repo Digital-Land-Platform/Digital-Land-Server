@@ -1,32 +1,11 @@
 import strawberry
 from typing import Optional
 from uuid import UUID
-from .services import PropertyService  # Assuming service handles business logic
+from .services import PropertyService  
+from .index import OwnerType, OwnerInput, OwnerUpdateInput, PropertyInput, PropertyUpdateInput, PropertyType
 
 property_service = PropertyService()
 
-@strawberry.type
-class OwnerType:
-    id: UUID
-    name: str
-    contact_info: str
-    address: Optional[str]
-
-@strawberry.type
-class PropertyType:
-    id: UUID
-    title: str
-    description: str
-    price: float
-    size: float
-    location: str
-    neighborhood: str
-    city: str
-    country: str
-    status: str
-    images: str
-    legalStatus: str
-    owner_id: UUID
 
 @strawberry.type
 class PropertyMutation:
@@ -34,11 +13,9 @@ class PropertyMutation:
     @strawberry.mutation
     async def create_owner(
         self,
-        name: str, 
-        contact_info: str,
-        address: Optional[str] = None
+        input: OwnerInput
     ) -> OwnerType:
-        owner = await property_service.create_owner(name, contact_info, address)
+        owner = await property_service.create_owner(input.name, input.contact_info, input.address)
         return OwnerType(
             id=owner.id,
             name=owner.name,
@@ -48,13 +25,10 @@ class PropertyMutation:
 
     @strawberry.mutation
     async def update_owner(
-        self,
-        id: UUID, 
-        name: Optional[str] = None,
-        contact_info: Optional[str] = None,
-        address: Optional[str] = None
+        self, 
+        input: OwnerUpdateInput
     ) -> OwnerType:
-        owner = await property_service.update_owner(id, name, contact_info, address)
+        owner = await property_service.update_owner(input.id, input.name, input.contact_info, input.address)
         return OwnerType(
             id=owner.id,
             name=owner.name,
@@ -70,33 +44,22 @@ class PropertyMutation:
     @strawberry.mutation
     async def create_property(
         self, 
-        title: str, 
-        description: str, 
-        price: float, 
-        size: float,
-        location: str, 
-        neighborhood: str,
-        city: str,
-        country: str, 
-        legalStatus: str,
-        images: str,
-        owner_id: UUID,
-        status: Optional[str] = "available"
+        input: PropertyInput
     ) -> PropertyType:
         property_ = await property_service.create_property(
             id=id,
-            title=title,
-            description=description,
-            price=price,
-            size=size,
-            location=location,
-            neighborhood=neighborhood,
-            city=city,
-            country=country,
-            legalStatus=legalStatus,
-            images=images,
-            owner_id=owner_id,  
-            status=status 
+            title=input.title,
+            description=input.description,
+            price=input.price,
+            size=input.size,
+            location=input.location,
+            neighborhood=input.neighborhood,
+            city=input.city,
+            country=input.country,
+            legalStatus=input.legalStatus,
+            images=input.images,
+            owner_id=input.owner_id,
+            status=input.status
         )
         return PropertyType(
             id=property_.id,
@@ -117,32 +80,21 @@ class PropertyMutation:
     @strawberry.mutation
     async def update_property(
         self,
-        id: UUID,
-        title: str,
-        description: str,
-        price: float,
-        size: float,
-        status: str,
-        location: str,
-        neighborhood: str,
-        city: str,
-        country: str,
-        legalStatus: str,
-        images: str
+        input: PropertyUpdateInput
     ) -> PropertyType:
         property_ = await property_service.update_property(
-            id=id,
-            title=title,
-            description=description,
-            price=price,
-            size=size,
-            status=status,
-            location=location,
-            neighborhood=neighborhood,
-            city=city,
-            country=country,
-            legalStatus=legalStatus,
-            images=images
+            id=input.id,
+            title=input.title,
+            description=input.description,
+            price=input.price,
+            size=input.size,
+            status=input.status,
+            location=input.location,
+            neighborhood=input.neighborhood,
+            city=input.city,
+            country=input.country,
+            legalStatus=input.legalStatus,
+            images=input.images
         )
         
         if property_ is None:
