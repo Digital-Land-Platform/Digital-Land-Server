@@ -2,7 +2,7 @@ import sys
 import os
 import pytest
 from fastapi import FastAPI
-from fastapi.testclient import TestClient
+from httpx import AsyncClient  # Async client for testing async routes
 
 # Add the root directory to the PYTHONPATH
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -12,22 +12,25 @@ from main import init_app
 # Initialize the app
 app = init_app()
 
-def test_home_route():
+@pytest.mark.asyncio
+async def test_home_route():
     print("Running test_home_route")
-    client = TestClient(app)
-    response = client.get("/")
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        response = await client.get("/")
     assert response.status_code == 200
 
-def test_non_existent_route():
+@pytest.mark.asyncio
+async def test_non_existent_route():
     print("Running test_non_existent_route")
-    client = TestClient(app)
-    response = client.get("/non-existent-route")
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        response = await client.get("/non-existent-route")
     assert response.status_code == 404
 
-def test_error_route():
+@pytest.mark.asyncio
+async def test_error_route():
     print("Running test_error_route")
-    client = TestClient(app)
-    response = client.get("/error")
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        response = await client.get("/error")
     assert response.status_code == 400
     assert response.json() == {"detail": "This is a custom error message"}
 

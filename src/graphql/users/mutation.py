@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
+from strawberry.directive import DirectiveValue
 from fastapi.exceptions import RequestValidationError
 import strawberry
 from .services import UserService
-from .index import UserType, UserInput
+from .index import UserType, UserInput, UserUpdateInput
 from src.models.UserRole import UserRole
 from src.models.User import User
 from fastapi import HTTPException
@@ -45,7 +46,7 @@ class UserMutation:
             raise strawberry.exceptions.GraphQLError(str(e))
 
     @strawberry.mutation
-    async def update_user(self, user_id: str, user_input: UserInput) -> UserType:
+    async def update_user(self, user_id: DirectiveValue[str], user_input: UserUpdateInput) -> UserType:
         try:
             user_role = UserRole.ADMIN
             if user_input.user.user_role.value == UserRole.BUYER.value:
@@ -71,7 +72,7 @@ class UserMutation:
             raise strawberry.exceptions.GraphQLError(str(e))
 
     @strawberry.mutation
-    async def delete_user(self, user_id: str) -> str:
+    async def delete_user(self, user_id:  DirectiveValue[str]) ->  DirectiveValue[str]:
         try:
             result = await userService.delete_user(user_id)
             return result

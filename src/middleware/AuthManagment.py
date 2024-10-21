@@ -51,8 +51,13 @@ class AuthManagment():
         Initializes the AuthManagement instance by retrieving the 
         JWKS from the authentication service.
         """
-        self.jwks_endpoint = f"https://{auth_domain}/.well-known/jwks.json"
-        self.jwks = requests.get(self.jwks_endpoint).json()["keys"]
+        try:
+            self.jwks_endpoint = f"https://{auth_domain}/.well-known/jwks.json"
+            self.jwks = requests.get(self.jwks_endpoint).json()["keys"]
+        except requests.exceptions.RequestException as e:
+            raise HTTPException(status_code=500, detail=f"Failed to retrieve JWKS: {str(e)}")
+        except KeyError:
+            raise HTTPException(status_code=500, detail="JWKS response did not contain expected keys.")
 
 
     def find_public_key(self, kid):

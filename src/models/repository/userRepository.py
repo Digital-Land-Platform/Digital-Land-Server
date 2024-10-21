@@ -30,7 +30,7 @@ class UserRepository(User):
                 if not user:
                      raise Exception("User not found")
                 for key, value in updaed_user.items():
-                     if hasattr(user, key):
+                     if value and hasattr(user, key):
                         setattr(user, key, value)
                 user.updated_at = datetime.now(timezone.utc)
                 session.add(user)

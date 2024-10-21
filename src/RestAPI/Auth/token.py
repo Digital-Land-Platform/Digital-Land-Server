@@ -74,9 +74,10 @@ async def get_access_token(code: str):
             return access_token
         else:
             user_data = {
-                 "name": user_info.get("name"),
-                "email": user_info.get("email"),
-                "role": UserRole.BUYER
+            "auth0_id": user_info.get("sub"),  # Auth0 user ID
+            "name": user_info.get("name"),
+            "email": user_info.get("email"),
+            "image": user_info.get("picture")
             }
             user = User(**user_data)
             await userService.create_user(user)
