@@ -7,6 +7,18 @@ on:
     branches: [ develop ]
 env:
   DB_CONFIG: ${{ secrets.DB_CONFIG }}
+  CLIENT_ID: ${{ secrets.CLIENT_ID }}
+  CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+  CLIENT_ID_M2M: ${{ secrets.CLIENT_ID_M2M }}
+  CLIENT_SECRET_M2M: ${{ secrets.CLIENT_SECRET_M2M }}
+  AUTH_DOMAIN: ${{ secrets.AUTH_DOMAIN }}
+  AUDUENCE: ${{ secrets.AUDUENCE }}
+  REDIRECT_URI: ${{ secrets.REDIRECT_URI }}
+  DEV_DB_HOST: ${{ secrets.DB_HOST }}
+  DEV_DB_PORT: ${{ secrets.DB_PORT }}
+  DEV_DB_USER: ${{ secrets.DB_USERNAME }}
+  DEV_DB_PASS: ${{ secrets.DB_PASS }}
+  DEV_DB_NAME: ${{ secrets.DB_NAME }}
 
 jobs:
   build:

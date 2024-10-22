@@ -22,17 +22,20 @@ from functools import wraps
 from fastapi import HTTPException
 import requests
 import os
-from jose import jws, jwt, ExpiredSignatureError, JWTError, JWSError
-from jose.exceptions import JWTClaimsError
+import jwt  # PyJWT, not the jose.jwt
+from jwt import algorithms
+from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError, InvalidTokenError
 from src.graphql.users.services import UserService
 from src.models.UserRole import UserRole
 from config.database import db
 
-auth_domain = os.getenv("AUTH_DOMAIN", " ")
-audience = os.getenv("AUDUENCE", " ")
+auth_domain = os.getenv("AUTH_DOMAIN", "Test_auth0.com")
+audience = os.getenv("AUDUENCE", "Test_audience.com")
 userService = UserService(db.SessionLocal())
+MAX_TOKEN_SIZE = 4096  # A maximum size for JWTs
 
-class AuthManagment():
+
+class AuthManagement():
     """
     AuthManagement Class
 
@@ -90,21 +93,33 @@ class AuthManagment():
                 HTTPException: If token validation fails with a 401 status code.
             """
             try:
-                unverified_headers = jws.get_unverified_header(get_token)
+                if len(get_token) > MAX_TOKEN_SIZE:
+                    raise HTTPException(status_code=413, detail="Token is too large")
+                
+                unverified_headers = jwt.get_unverified_header(get_token)
+                
+                public_key = self.find_public_key(unverified_headers["kid"])
+                if public_key is None:
+                    raise HTTPException(status_code=401, detail="Invalid key ID, public key not found")
+                
+                if public_key.get("kty") != "RSA":
+                    raise HTTPException(status_code=401, detail="Invalid key type")
+                pem_key = algorithms.RSAAlgorithm.from_jwk(public_key)
+                # Decode the token using the RSA public key
                 token_payload = jwt.decode(
-                    token=get_token,
-                    key=self.find_public_key(unverified_headers["kid"]),
-                    audience=f"{audience}",
-                    algorithms="RS256",
+                    get_token,
+                    key=pem_key,
+                    audience=audience,
+                    algorithms=["RS256"],  # Ensure only RS256 is used
+                    options={"verify_iat": False} 
                 )
                 return token_payload
-            except (
-                ExpiredSignatureError,
-                JWTError,
-                JWTClaimsError,
-                JWSError,
-            ) as error:
-                raise HTTPException(status_code=401, detail=str(error))
+            except ExpiredSignatureError:
+                raise HTTPException(status_code=401, detail="Token has expired")
+            except InvalidSignatureError:
+                raise HTTPException(status_code=401, detail="Invalid token signature")
+            except InvalidTokenError as e:
+                raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
 
     def get_user_info(self, token):
         """

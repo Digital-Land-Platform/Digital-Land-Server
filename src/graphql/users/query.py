@@ -25,12 +25,12 @@ from strawberry.types import Info
 from strawberry.directive import DirectiveValue
 from typing import List
 from src.models.UserRole import UserRole
-from src.middleware.AuthManagment import AuthManagment
+from src.middleware.AuthManagment import AuthManagement
 from .index import UserType
 from .services import UserService
 from config.database import db
 
-auth_managment = AuthManagment()
+auth_managment = AuthManagement()
 user_service = UserService(db.SessionLocal())
 
 

@@ -23,16 +23,17 @@ Attributes:
 
 from fastapi import APIRouter
 from starlette.responses import RedirectResponse
+from config.config import Config
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
 router = APIRouter()
 
-client_id = os.getenv("CLIENT_ID", " ")
-auth_domain = os.getenv("AUTH_DOMAIN", " ")
-audience = os.getenv("AUDUENCE", " ")
-rediredt_uri = os.getenv("REDIRECT_URI", " ")
+client_id = Config.get_env_variable("CLIENT_ID")
+auth_domain = Config.get_env_variable("AUTH_DOMAIN")
+audience = Config.get_env_variable("AUDUENCE")
+rediredt_uri = Config.get_env_variable("REDIRECT_URI")
 
 @router.get("/login")
 def login():
