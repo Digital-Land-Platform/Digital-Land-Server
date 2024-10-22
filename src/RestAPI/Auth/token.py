@@ -68,15 +68,16 @@ async def get_access_token(code: str):
         auth_managment.validate_token(access_token)
         user_info = auth_managment.get_user_info(access_token)
         if not user_info.get("email_verified"):
-            raise HTTPException(status_code=400, detail="Failed to create user")
+            raise HTTPException(status_code=400, detail="Failed to create user, Email is not verified")
         exist_user = await userService.get_user_by_email(user_info.get("email"))
         if exist_user:
             return access_token
         else:
             user_data = {
-                 "name": user_info.get("name"),
-                "email": user_info.get("email"),
-                "role": UserRole.BUYER
+            "auth0_id": user_info.get("sub"),  # Auth0 user ID
+            "name": user_info.get("name"),
+            "email": user_info.get("email"),
+            "image": user_info.get("picture")
             }
             user = User(**user_data)
             await userService.create_user(user)

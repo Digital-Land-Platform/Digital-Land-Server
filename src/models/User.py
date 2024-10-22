@@ -7,6 +7,8 @@ from .Base import Base
 
 class User(Base):
     __tablename__ = "users"
+    image = Column(String)
+    auth0_id = Column(String, unique=True, index=True)
     name = Column(String, index=True)
     email = Column(String, unique=True, index=True)
-    role = Column(Enum(UserRole), nullable=False)
+    role = Column(Enum(UserRole))

@@ -22,10 +22,10 @@ from fastapi import HTTPException
 from fastapi.exceptions import RequestValidationError
 import strawberry
 from strawberry.types import Info
-from typing import Optional, List
+from strawberry.directive import DirectiveValue
+from typing import List
 from src.models.UserRole import UserRole
 from src.middleware.AuthManagment import AuthManagment
-from strawberry.scalars import JSON
 from .index import UserType
 from .services import UserService
 from config.database import db
@@ -54,7 +54,7 @@ class UserQuery:
     """
 
     @strawberry.field
-    def protected_data(self, info: Info) -> Optional[str]:
+    def protected_data(self, info: Info) -> DirectiveValue[str]:
         """
         Retrieves protected data for the authenticated user.
 
@@ -112,7 +112,7 @@ class UserQuery:
     
     @strawberry.field
     @auth_managment.role_required([UserRole.ADMIN, UserRole.BUYER, UserRole.LAND_OWNER, UserRole.NOTARY])
-    async def get_user_email(self, info:Info, email: str) -> UserType:
+    async def get_user_email(self, info:Info, email: DirectiveValue[str]) -> UserType:
         """
         Retrieves a user by their email.
 
@@ -133,7 +133,7 @@ class UserQuery:
             raise Exception(f"Failed to get user: {e}")
 
     @strawberry.field
-    async def get_user_id(self, user_id: str) -> UserType:
+    async def get_user_id(self, user_id: DirectiveValue[str]) -> UserType:
         """
         Retrieves a user by their ID.
 
