@@ -24,9 +24,9 @@ import strawberry
 from strawberry.types import Info
 from strawberry.directive import DirectiveValue
 from typing import List
-from src.models.UserRole import UserRole
+from src.models.enums.UserRole import UserRole
 from src.middleware.AuthManagment import AuthManagement
-from .index import UserType
+from .types import UserType
 from .services import UserService
 from config.database import db
 
@@ -111,7 +111,7 @@ class UserQuery:
             raise Exception(f"Failed to get user: {e}")
     
     @strawberry.field
-    @auth_managment.role_required([UserRole.ADMIN, UserRole.BUYER, UserRole.LAND_OWNER, UserRole.NOTARY])
+    @auth_managment.role_required([UserRole.ADMIN, UserRole.USER, UserRole.NOTARY])
     async def get_user_email(self, info:Info, email: DirectiveValue[str]) -> UserType:
         """
         Retrieves a user by their email.

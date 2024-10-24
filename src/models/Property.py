@@ -1,37 +1,71 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Text
+from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Table, Text
+from src.models.Amenity import Amenity
+from src.models.Image import Image
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
-from datetime import datetime
-import uuid
-from src.models.Base import Base
+from sqlalchemy.orm import relationship, validates
+from src.models.Base import Base, BaseModel
+from src.models.Reel import Reel
+
 
 class Property(Base):
     __tablename__ = "properties"
     
-    
     title = Column(String, nullable=False)
-    description = Column(Text, nullable=False)
-    price = Column(Float, nullable=False)
-    size = Column(Float, nullable=False)
-    status = Column(String, nullable=False)
-    location = Column(String, nullable=False)
-    neighborhood = Column(String, nullable=False)
-    city = Column(String, nullable=False)
-    country = Column(String, nullable=False)
-    latitude = Column(Float, nullable=True)
-    longitude = Column(Float, nullable=True)
-    images = Column(Text, nullable=False)
-    virtualTourUrl = Column(String, nullable=True)
-    streetViewUrl = Column(String, nullable=True)
-    additionalFeatures = Column(Text, nullable=True)
-    yearBuilt = Column(Integer, nullable=True)
-    legalStatus = Column(String, nullable=False)
-    disclosure = Column(Text, nullable=True)
-    energyRating = Column(String, nullable=True)
-    sustainabilityFeatures = Column(Text, nullable=True)
-    futureDevelopmentPlans = Column(Text, nullable=True)
-    zoningInformation = Column(Text, nullable=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    description = Column(String)
+    price = Column(Float)
+    size = Column(Float)
+    status = Column(String, default="Pending")
+    location_id = Column(UUID(as_uuid=True), ForeignKey("locations.id"))
+    neighborhood = Column(String)
+    latitude = Column(String)
+    longitude = Column(String)
+    year_built = Column(Integer)
+    legal_status = Column(String)
+    disclosure = Column(String)
+    energy_rating = Column(String)
+    street_view_url = Column(String)
+    future_development_plans = Column(Text, nullable=True)
+    zoning_information = Column(Text, nullable=True)
+    property_amenities = Table("property_amenities", Base.metadata,
+                              Column("property_id", UUID(as_uuid=True),
+                                     ForeignKey("properties.id"),
+                                     nullable=False),
+                              Column("amenity_id", UUID(as_uuid=True),
+                                     ForeignKey("amenities.id"),
+                                     nullable=False),
+                              mysql_charset="latin1",)
     
+    amenities = relationship("Amenity", secondary=property_amenities,
+                                 viewonly=False)
+    transaction = relationship("Transaction", backref="properties", cascade="all, delete, delete-orphan")
+    message = relationship("Message", backref="properties", cascade="all, delete, delete-orphan")
+    reels = relationship("Reel", backref="properties", cascade="all, delete, delete-orphan")
+    images = relationship("Image", backref="properties", cascade="all, delete-orphan")
     
-    owner_id = Column(UUID(as_uuid=True), ForeignKey("owners.id"), nullable=False)
-    owner = relationship("Owner", back_populates="properties")
+    @validates('price')
+    def validate_price(self, key, value):
+        if value <= 0:
+            raise ValueError("Price must be positive")
+        return value
+
+    @validates('size')
+    def validate_size(self, key, value):
+        if value <= 0:
+            raise ValueError("Size must be positive")
+        return value
+    
+    @validates('status')
+    def check_status(self, key, value):
+        valid_statuses = ['available', 'pending', 'sold']
+        if value is not None and value not in valid_statuses:
+            raise ValueError(f'Status must be one of: {", ".join(valid_statuses)}.')
+        return value
+    
+    @validates('yearBuilt')
+    def check_year_built(self, key, value):
+        if value is not None and value < 0:
+            raise ValueError('Year built must be a non-negative integer.')
+        return value
+    

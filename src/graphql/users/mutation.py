@@ -4,9 +4,11 @@ from strawberry.directive import DirectiveValue
 from fastapi.exceptions import RequestValidationError
 import strawberry
 from .services import UserService
-from .index import UserType, UserInput, UserUpdateInput
-from src.models.UserRole import UserRole
+from .types import UserType,  UserMetadata, UserUpdateMetadata
+from src.models.enums.UserRole import UserRole
+from src.models.enums.AccountStatus import AccountStatus
 from src.models.User import User
+from src.middleware.UserProfileValidator import UserProfileValidator
 from fastapi import HTTPException
 from config.database import db
 
@@ -16,19 +18,31 @@ userService = UserService(db.SessionLocal())
 class UserMutation:
         
     @strawberry.mutation
-    async def register_user(self, user_input: UserInput) -> UserType:
+    async def register_user(self, user_input: UserMetadata) -> UserType:
         try:
             user_role = UserRole.ADMIN
-            if user_input.user.user_role.value == UserRole.BUYER.value:
-                user_role = UserRole.BUYER
-            elif user_input.user.user_role.value == UserRole.LAND_OWNER.value:
-                user_role = UserRole.LAND_OWNER
-            elif user_input.user.user_role.value == UserRole.NOTARY.value:
+            if user_input.user_role.value == UserRole.USER.value:
+                user_role = UserRole.USER
+            elif user_input.user_role.value == UserRole.NOTARY.value:
                 user_role = UserRole.NOTARY
+            elif user_input.user_role.value == UserRole.BROKER.value:
+                user_role = UserRole.BROKER
+            account_status = AccountStatus.INACTIVE
+            if user_input.account_status.value == AccountStatus.ACTIVE.value:
+                account_status = AccountStatus.ACTIVE
+            elif user_input.account_status.value == AccountStatus.SUSPENDED.value:
+                account_status = AccountStatus.SUSPENDED
+            UserProfileValidator.validate_name(user_input.username, "username")
+            UserProfileValidator.validate_phone_number(user_input.phone_number)
 
             user_dict = {
-                "name": user_input.user.name,
-                "email": user_input.user.email,
+                "image": user_input.image,
+                "username": user_input.username,
+                "email": user_input.email,
+                "phone_number": user_input.phone_number,
+                "is_2FA_enabled": user_input.is_2FA_enabled,
+                "verified": user_input.verified,
+                "account_status": account_status,
                 "role": user_role
             }
             exist_user = await userService.get_user_by_email(user_dict["email"])
@@ -46,22 +60,33 @@ class UserMutation:
             raise strawberry.exceptions.GraphQLError(str(e))
 
     @strawberry.mutation
-    async def update_user(self, user_id: DirectiveValue[str], user_input: UserUpdateInput) -> UserType:
+    async def update_user(self, user_id: DirectiveValue[str], user_input: UserUpdateMetadata) -> UserType:
         try:
             user_role = UserRole.ADMIN
-            if user_input.user.user_role.value == UserRole.BUYER.value:
-                user_role = UserRole.BUYER
-            elif user_input.user.user_role.value == UserRole.LAND_OWNER.value:
-                user_role = UserRole.LAND_OWNER
-            elif user_input.user.user_role.value == UserRole.NOTARY.value:
-                user_role = UserRole.NOTARY
-            
+            if user_input.user_role:
+                if user_input.user_role.value == UserRole.USER.value:
+                    user_role = UserRole.USER
+                elif user_input.user_role.value == UserRole.NOTARY.value:
+                    user_role = UserRole.NOTARY
+                elif user_input.user_role.value == UserRole.BROKER.value:
+                    user_role = UserRole.BROKER
+            account_status = AccountStatus.INACTIVE
+            if user_input.account_status:
+                if user_input.account_status.value == AccountStatus.ACTIVE.value:
+                    account_status = AccountStatus.ACTIVE
+                elif user_input.account_status.value == AccountStatus.SUSPENDED.value:
+                    account_status = AccountStatus.SUSPENDED
+                
             user_dict = {
-                "name": user_input.user.name,
-                "email": user_input.user.email,
+                "image": user_input.image,
+                "username": user_input.username,
+                "email": user_input.email,
+                "phone_number": user_input.phone_number,
+                "is_2FA_enabled": user_input.is_2FA_enabled,
+                "verified": user_input.verified,
+                "account_status": account_status,
                 "role": user_role
-            }
-            print("User dict: ", user_dict)
+            } 
             user = await userService.update_user(user_id, user_dict)
             if not user:
                 raise HTTPException(status_code=400, detail="Failed to update user")

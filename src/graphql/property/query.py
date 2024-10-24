@@ -1,29 +1,40 @@
-# src/graphql/property/query.py
-
 import strawberry
 from uuid import UUID
 from typing import Optional, List
-from .services import PropertyService  # Assuming service handles business logic
-from .mutation import OwnerType, PropertyType  # Ensure these are imported
+from .services import PropertyService  
+from .mutation import PropertyType 
+from .types import AmenitiesType 
+from src.startups.dbConn import db  
+from sqlalchemy.ext.asyncio import AsyncSession
+from src.models.Property import Property
+from src.models.repository.propertyRepository import PropertyRepository
+
+service = PropertyService(db)
 
 @strawberry.type
 class PropertyQuery:
-    @strawberry.field
-    async def get_owner(self, id: UUID) -> Optional[OwnerType]:  # Specify return type
-        service = PropertyService()
-        return await service.get_owner(id)
 
     @strawberry.field
-    async def get_property(self, id: UUID) -> Optional[PropertyType]:  # Specify return type
-        service = PropertyService()
+    async def get_property(self, id: UUID) -> Optional[PropertyType]:
+        """
+        Retrieve a property by its ID.
+        
+        Args:
+            id (UUID): The ID of the property to retrieve.
+            
+        Returns:
+            Optional[PropertyType]: The property object if found, None otherwise.
+        """
+        
         return await service.get_property(id)
 
     @strawberry.field
-    async def list_owners(self) -> List[OwnerType]:  # Specify return type
-        service = PropertyService()
-        return await service.list_owners()
-
-    @strawberry.field
-    async def list_properties(self) -> List[PropertyType]:  # Specify return type
-        service = PropertyService()
+    async def list_properties(self) -> List[PropertyType]:
+        """
+        List all properties.
+        
+        Returns:
+            List[PropertyType]: A list of all properties.
+        """
         return await service.list_properties()
+    
