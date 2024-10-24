@@ -24,22 +24,22 @@ Attributes:
 
 from fastapi import APIRouter, HTTPException
 from src.models.User import User
-from src.middleware.AuthManagment import AuthManagment
+from src.middleware.AuthManagment import AuthManagement
 from src.graphql.users.services import UserService
 from config.database import db
-from src.models.UserRole import UserRole
+from config.config import Config
 import requests
 import os
 
 router = APIRouter()
-auth_managment = AuthManagment()
+auth_managment = AuthManagement()
 userService = UserService(db.SessionLocal())
 
-client_id = os.getenv("CLIENT_ID", " ")
-client_secret = os.getenv("CLIENT_SECRET", " ")
-auth_domain = os.getenv("AUTH_DOMAIN", " ")
-rediredt_uri = os.getenv("REDIRECT_URI", " ")
-audience = os.getenv("AUDUENCE", " ")
+client_id = Config.get_env_variable("CLIENT_ID")
+client_secret = Config.get_env_variable("CLIENT_SECRET")
+auth_domain = Config.get_env_variable("AUTH_DOMAIN")
+rediredt_uri = Config.get_env_variable("REDIRECT_URI")
+audience = Config.get_env_variable("AUDUENCE")
 
 @router.get("/token")
 async def get_access_token(code: str):
@@ -54,31 +54,35 @@ async def get_access_token(code: str):
             str: The access token received from the authentication 
                 service, or None if not found in the response.
         """
-        payload = (
-            "grant_type=authorization_code"
-            f"&client_id={client_id}"
-            f"&client_secret={client_secret}"
-            f"&code={code}"
-            f"&redirect_uri={rediredt_uri}"
-            f"&audience={audience}"
-        )
-        headers = {"content-type": "application/x-www-form-urlencoded"}
-        response = requests.post(f"https://{auth_domain}/oauth/token", payload, headers=headers)
-        access_token = response.json().get("access_token")
-        auth_managment.validate_token(access_token)
-        user_info = auth_managment.get_user_info(access_token)
-        if not user_info.get("email_verified"):
-            raise HTTPException(status_code=400, detail="Failed to create user, Email is not verified")
-        exist_user = await userService.get_user_by_email(user_info.get("email"))
-        if exist_user:
-            return access_token
-        else:
-            user_data = {
-            "auth0_id": user_info.get("sub"),  # Auth0 user ID
-            "name": user_info.get("name"),
-            "email": user_info.get("email"),
-            "image": user_info.get("picture")
-            }
-            user = User(**user_data)
-            await userService.create_user(user)
-            return access_token
+        try:
+            payload = (
+                "grant_type=authorization_code"
+                f"&client_id={client_id}"
+                f"&client_secret={client_secret}"
+                f"&code={code}"
+                f"&redirect_uri={rediredt_uri}"
+                f"&audience={audience}"
+            )
+            headers = {"content-type": "application/x-www-form-urlencoded"}
+            response = requests.post(f"https://{auth_domain}/oauth/token", payload, headers=headers)
+            access_token = response.json().get("access_token")
+            print("access token", access_token)
+            auth_managment.validate_token(access_token)
+            user_info = auth_managment.get_user_info(access_token)
+            if not user_info.get("email_verified"):
+                raise HTTPException(status_code=400, detail="Failed to create user, Email is not verified")
+            exist_user = await userService.get_user_by_email(user_info.get("email"))
+            if exist_user:
+                return access_token
+            else:
+                user_data = {
+                "auth0_id": user_info.get("sub"),  # Auth0 user ID
+                "name": user_info.get("name"),
+                "email": user_info.get("email"),
+                "image": user_info.get("picture")
+                }
+                user = User(**user_data)
+                await userService.create_user(user)
+                return access_token
+        except Exception as e:
+             print(e)

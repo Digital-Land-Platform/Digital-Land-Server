@@ -3,19 +3,20 @@ import os
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql import text
+from config.config import Config
 from src.models.Base import BaseModel
+
 
 load_dotenv()
 
-DB_CONFIG = os.getenv("DB_CONFIG")
+DB_CONFIG = Config.get_env_variable("DB_CONFIG")
 
 # Database configuration
-DEV_DB_HOST = os.getenv("DEV_DB_HOST", "localhost")
-DEV_DB_PORT = os.getenv("DEV_DB_PORT", "5432")
-DEV_DB_USER = os.getenv("DEV_DB_USER", "test_user")
-DEV_DB_PASS = os.getenv("DEV_DB_PASS", "test_pass")
-DEV_DB_NAME = os.getenv("DEV_DB_NAME", "test_db")
+DEV_DB_HOST = Config.get_env_variable("DEV_DB_HOST")
+DEV_DB_PORT = Config.get_env_variable("DEV_DB_PORT")
+DEV_DB_USER = Config.get_env_variable("DEV_DB_USER")
+DEV_DB_PASS = Config.get_env_variable("DEV_DB_PASS")
+DEV_DB_NAME = Config.get_env_variable("DEV_DB_NAME")
 
 if not DB_CONFIG:
     if DEV_DB_HOST \

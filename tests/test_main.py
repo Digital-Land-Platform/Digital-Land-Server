@@ -8,6 +8,10 @@ from httpx import AsyncClient  # Async client for testing async routes
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from main import init_app
+from unittest.mock import patch
+
+
+os.environ["TESTING"] = "true"
 
 # Initialize the app
 app = init_app()
