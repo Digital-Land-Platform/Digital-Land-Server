@@ -2,11 +2,13 @@
 
 import strawberry
 from enum import Enum
+from strawberry.directive import DirectiveValue
 
 
 @strawberry.type
 class UserType:
     id: str
+    image: str
     name: str
     email: str
     role: str
@@ -15,6 +17,7 @@ class UserType:
     def from_model(cls, user):
         return cls(
             id=str(user.id),
+            image=user.image,
             name=user.name,
             email=user.email,
             role=user.role.value
@@ -29,11 +32,22 @@ class UserRole(Enum):
 
 @strawberry.input
 class UserMetadata:
+    image: str
     name: str
     email: str
-    #password: str
     user_role: UserRole
 
 @strawberry.input
 class UserInput:
     user: UserMetadata
+
+@strawberry.input
+class UserUpdateMetadata:
+    image: DirectiveValue[str] = None
+    name: DirectiveValue[str] = None
+    email: DirectiveValue[str] = None
+    user_role: DirectiveValue[UserRole] = None
+
+@strawberry.input
+class UserUpdateInput:
+    user: UserUpdateMetadata

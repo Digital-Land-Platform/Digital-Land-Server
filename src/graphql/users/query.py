@@ -22,43 +22,8 @@ from fastapi import HTTPException
 from fastapi.exceptions import RequestValidationError
 import strawberry
 from strawberry.types import Info
-from typing import Optional, List
-from src.models.UserRole import UserRole
-from src.middleware.AuthManagment import AuthManagement
-from .index import UserType
-from .services import UserService
-from config.database import db
-
-auth_managment = AuthManagement()
-user_service = UserService(db.SessionLocal())
-
-
-@strawberry.type
-#!/usr/bin/python3
-
-"""
-query.py
-
-This module defines the UserQuery class for handling GraphQL queries
-related to user data in the Digital Land application. It provides
-methods to access protected data, ensuring that the user is
-authenticated and authorized.
-
-Classes:
-    UserQuery: Contains methods for querying user-related data.
-
-Attributes:
-    auth_management (AuthManagment): Instance of AuthManagment for
-                                     handling authentication and authorization.
-    user_service (UserService): Instance of UserService for interacting with
-                                the user repository.
-"""
-
-from fastapi import HTTPException
-from fastapi.exceptions import RequestValidationError
-import strawberry
-from strawberry.types import Info
-from typing import Optional, List
+from strawberry.directive import DirectiveValue
+from typing import List
 from src.models.UserRole import UserRole
 from src.middleware.AuthManagment import AuthManagement
 from .index import UserType
@@ -89,7 +54,7 @@ class UserQuery:
     """
 
     @strawberry.field
-    def protected_data(self, info: Info) -> Optional[str]:
+    def protected_data(self, info: Info) -> DirectiveValue[str]:
         """
         Retrieves protected data for the authenticated user.
 
@@ -147,7 +112,7 @@ class UserQuery:
     
     @strawberry.field
     @auth_managment.role_required([UserRole.ADMIN, UserRole.BUYER, UserRole.LAND_OWNER, UserRole.NOTARY])
-    async def get_user_email(self, info:Info, email: str) -> UserType:
+    async def get_user_email(self, info:Info, email: DirectiveValue[str]) -> UserType:
         """
         Retrieves a user by their email.
 
@@ -160,6 +125,7 @@ class UserQuery:
         Raises:
             Exception: If there is a failure in retrieving user data from the database.
         """
+
         try:
             found_user = await user_service.get_user_by_email(email)
             return UserType.from_model(found_user)
@@ -167,7 +133,7 @@ class UserQuery:
             raise Exception(f"Failed to get user: {e}")
 
     @strawberry.field
-    async def get_user_id(self, user_id: str) -> UserType:
+    async def get_user_id(self, user_id: DirectiveValue[str]) -> UserType:
         """
         Retrieves a user by their ID.
 
@@ -185,4 +151,4 @@ class UserQuery:
             return UserType.from_model(found_user)
         except Exception as e:
             raise Exception(f"Failed to get user: {e}")
-    
+

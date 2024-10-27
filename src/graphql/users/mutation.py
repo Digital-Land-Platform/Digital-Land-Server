@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
+from strawberry.directive import DirectiveValue
 from fastapi.exceptions import RequestValidationError
 import strawberry
 from .services import UserService
-from .index import UserType, UserInput
+from .index import UserType, UserInput, UserUpdateInput
 from src.models.UserRole import UserRole
 from src.models.User import User
 from fastapi import HTTPException
 from config.database import db
-
 
 userService = UserService(db.SessionLocal())
 
@@ -29,7 +29,6 @@ class UserMutation:
             user_dict = {
                 "name": user_input.user.name,
                 "email": user_input.user.email,
-                #"password": user_input.user.password,
                 "role": user_role
             }
             exist_user = await userService.get_user_by_email(user_dict["email"])
@@ -40,11 +39,6 @@ class UserMutation:
             user = await userService.create_user(new_user)
             if not user:
                 raise HTTPException(status_code=400, detail="Failed to create user")
-            
-            if user.role == UserRole.LAND_OWNER:
-                owner_service = ownerService(user=user)
-                await ownerService.create_owner(new_owner)
-            
             return UserType.from_model(user)
         except HTTPException as e:
             raise strawberry.exceptions.GraphQLError(e.detail)
@@ -52,7 +46,7 @@ class UserMutation:
             raise strawberry.exceptions.GraphQLError(str(e))
 
     @strawberry.mutation
-    async def update_user(self, user_id: str, user_input: UserInput) -> UserType:
+    async def update_user(self, user_id: DirectiveValue[str], user_input: UserUpdateInput) -> UserType:
         try:
             user_role = UserRole.ADMIN
             if user_input.user.user_role.value == UserRole.BUYER.value:
@@ -65,7 +59,6 @@ class UserMutation:
             user_dict = {
                 "name": user_input.user.name,
                 "email": user_input.user.email,
-                #"password": user_input.user.password,
                 "role": user_role
             }
             print("User dict: ", user_dict)
@@ -79,7 +72,7 @@ class UserMutation:
             raise strawberry.exceptions.GraphQLError(str(e))
 
     @strawberry.mutation
-    async def delete_user(self, user_id: str) -> str:
+    async def delete_user(self, user_id:  DirectiveValue[str]) ->  DirectiveValue[str]:
         try:
             result = await userService.delete_user(user_id)
             return result

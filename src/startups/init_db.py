@@ -1,6 +1,6 @@
 import asyncio
 from config.database import db
-from src.models import Property, User
+from src.models import Property
 from src.models.Base import Base
 
 async def init_db():

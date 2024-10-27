@@ -47,11 +47,11 @@ class DatabaseSession:
     # Generating models into a database
     async def create_all(self):
         async with self.engine.begin() as conn:
-            await conn.run_sync(SQLModel.metadata.create_all)
+            await conn.run_sync(BaseModel.metadata.create_all)
 
     async def drop_all(self):
         async with self.engine.begin() as conn:
-            await conn.run_sync(SQLModel.metadata.drop_all)
+            await conn.run_sync(BaseModel.metadata.drop_all)
 
     # close connection
     async def close(self):
