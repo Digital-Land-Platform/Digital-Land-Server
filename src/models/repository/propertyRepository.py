@@ -1,145 +1,135 @@
 from uuid import UUID
-from typing import Optional
+from typing import Optional, List
 from sqlalchemy.future import select
-from src.models.Owner import Owner
 from src.models.Property import Property
+from src.models.Image import Image
+from src.models.Amenities import Amenities
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
+from sqlalchemy import func
 from config.database import DatabaseSession
+from config.database import db
+
 
 class PropertyRepository:
-    def __init__(self):
-        self.db = DatabaseSession()
+    def __init__(self, db: AsyncSession):
+        """
+        Initializes the property repository with the database session.
+    
+        Args:
+            db (AsyncSession): The database session.
+        """
+        self.db = db
 
-    async def create_owner(self, name: str, contact_info: str, address: str = None):
-        new_owner = Owner(
-            name=name, 
-            contact_info=contact_info,
-            address=address
-            )
-        async with self.db:
-            async with self.db.session as session:
-                session.add(new_owner)
-                await session.commit()
-                await session.refresh(new_owner)
-        return new_owner
-
-    async def update_owner(self, id: UUID, name: str = None, contact_info: str = None, address: str = None):
-        async with self.db:
-            async with self.db.session as session:
-                owner = await session.get(Owner, id)
-                if owner is None:
-                    return None
-                if name is not None:
-                    owner.name = name
-                if contact_info is not None:
-                    owner.contact_info = contact_info
-                if address is not None:
-                    owner.address = address
-                await session.commit()
-                await session.refresh(owner)
-        return owner
-
-    async def delete_owner(self, id: UUID):
-        async with self.db:
-            async with self.db.session as session:
-                owner = await session.get(Owner, id)
-                if owner is not None:
-                    await session.delete(owner)
-                    await session.commit()
-                    return True
-                return False
-
-    async def create_property(self, title: str, description: str, price: float, size: float,
-                              location: str, neighborhood: str, city: str, country: str,
-                              legalStatus: str, images: str, owner_id: UUID, status: str = "available"):
-        new_property = Property(
-            title=title,
-            description=description,
-            price=price,
-            size=size,
-            location=location,
-            neighborhood=neighborhood,
-            city=city,
-            country=country,
-            owner_id=owner_id,
-            status=status,
-            images=images,
-            legalStatus=legalStatus
-        )
-        async with self.db:
-            async with self.db.session as session:
-                session.add(new_property)
-                await session.commit()
-                await session.refresh(new_property)
+    async def create_property(
+        self,
+        new_property: Property
+    ) -> Property:
+        """
+        Create a new property in the database.
+        
+        Args:
+            new_property (Property): The property object to be created.
+            
+        Returns:
+            Property: The created property object.
+        """
+        
+        self.db.add(new_property)
+        await self.db.commit()
         return new_property
+
+     
+    async def get_existing_property(self, title: str, location: str, user_id: UUID):
+        """
+        Get an existing property from the database.
+        """
+        async with self.db:
+            result = await self.db.execute(
+                select(Property).where(
+                    func.lower(Property.title) == func.lower(title),
+                    func.lower(Property.location) == func.lower(location),
+                    Property.owner_id == user_id
+                )
+            )
+            return result.scalar()
+
 
     async def update_property(
         self,
-        id: UUID,
-        title: str,
-        description: str,
-        price: float,
-        size: float,
-        status: str,
-        location: str,
-        neighborhood: str,
-        city: str,
-        country: str,
-        legalStatus: str,
-        images: list[str]
+        property_: Property
     ) -> Optional[Property]:
-        async with self.db:
-            async with self.db.session as session:
-                property_ = await session.get(Property, id)
-                if property_ is None:
-                    return None
+        """
+        Update a property in the database.
+        
+        Args:
+            property_ (Property): The property object to be updated.
+            
+        Returns:
+            Optional[Property]: The updated property object.
+        """
 
-                # Update fields explicitly
-                property_.title = title
-                property_.description = description
-                property_.price = price
-                property_.size = size
-                property_.status = status
-                property_.location = location
-                property_.neighborhood = neighborhood
-                property_.city = city
-                property_.country = country
-                property_.legalStatus = legalStatus
-                property_.images = images
-
-                await session.commit()
-                await session.refresh(property_)
-
+        self.db.add(property_)
+        await self.db.commit()
         return property_
 
 
-    async def delete_property(self, id: UUID):
+    async def get_property(self, id: UUID) -> Optional[Property]:
+        """
+        Get a property by ID.
+        
+        Args:
+        
+            id (UUID): The ID of the property to be fetched.
+            
+        Returns:
+        
+            Optional[Property]: The property object.
+        """
+        async with self.db as session:
+            result = await session.execute(
+                select(Property)
+                .options(joinedload(Property.images), joinedload(Property.amenities))
+                .where(Property.id == id)
+            )
+            return result.unique().scalar_one_or_none()
+        
+    async def delete_property(self, id: UUID) -> bool:
+        """
+        Delete a property.
+        
+        Args:
+            id (UUID): The ID of the property to be deleted.
+            
+        Returns:
+        
+            bool: True if the property was deleted successfully, False otherwise.
+            
+        """
         async with self.db:
-            async with self.db.session as session:
-                property_ = await session.get(Property, id)
-                if property_ is not None:
-                    await session.delete(property_)
-                    await session.commit()
-                    return True
-                return False
-
-    async def get_owner(self, id: UUID):
-        async with self.db:
-            async with self.db.session as session:
-                return await session.get(Owner, id)
-
-    async def get_property(self, id: UUID):
-        async with self.db:
-            async with self.db.session as session:
-                return await session.get(Property, id)
-
-    async def list_owners(self):
-        async with self.db:
-            async with self.db.session as session:
-                owners = await session.execute(select(Owner))
-                return owners.scalars().all()
+            property_ = await self.db.get(Property, id)
+            if property_:
+                await self.db.delete(property_)
+                await self.db.commit()
+                return True
+            return False
 
     async def list_properties(self):
-        async with self.db:
-            async with self.db.session as session:
-                properties = await session.execute(select(Property))
-                return properties.scalars().all()
+        """
+        List all properties.
+        
+        Returns:
+            list[Property]: A list of all properties
+        """
+        async with self.db as session:
+            result = await session.execute(
+                select(Property)
+                .options(joinedload(Property.images), joinedload(Property.amenities)) 
+            )
+            properties = result.scalars().unique()
+            return properties.all() if result else None 
+        
+    
+        
+    
+
