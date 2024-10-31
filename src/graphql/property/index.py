@@ -5,6 +5,7 @@ from sqlalchemy import DateTime, Text, Column, Integer, String, Float, ForeignKe
 from datetime import datetime
 from pydantic import BaseModel, Field, condecimal
 from src.graphql.amenity.index import AmenitiesType
+from src.graphql.image.types import ImageType, ImageInput, ImageUpdateInput
     
 @strawberry.input
 class PropertyBaseInput:
@@ -19,7 +20,7 @@ class PropertyBaseInput:
     country: Optional[str] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
-    images: Optional[List[str]] = None
+    #images: Optional[List[str]] = None
     virtualTourUrl: Optional[str] = None
     streetViewUrl: Optional[str] = None
     yearBuilt: Optional[int] = None
@@ -29,12 +30,7 @@ class PropertyBaseInput:
     futureDevelopmentPlans: Optional[str] = None
     zoningInformation: Optional[str] = None
     #amenities: Optional[List[UUID]] = None
-#The PropertyType for property data
-    
-@strawberry.type
-class ImageType:
-    url: str
-    
+
 @strawberry.type
 class PropertyType:
     id: str
@@ -67,11 +63,12 @@ class PropertyInput(PropertyBaseInput):
     # Accept the user_id in input but map it to owner_id in logic
     user_id: UUID
     amenity_ids: Optional[List[UUID]] = None
-
+    images: Optional[List[ImageInput]] = None
 # The PropertyUpdateInput for updating an existing property
 @strawberry.input
 class PropertyUpdateInput(PropertyBaseInput):
     id: UUID
     amenity_ids: Optional[List[UUID]] = None
+    images: Optional[List[ImageUpdateInput]] = None
 
     

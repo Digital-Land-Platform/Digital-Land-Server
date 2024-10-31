@@ -12,4 +12,4 @@ class Amenities(Base):
     icon = Column(String, nullable=False)
 
     # Relationship to Property
-    properties = relationship('Property', secondary=property_amenities, back_populates='amenities')
+    #properties = relationship('Property', secondary=property_amenities, back_populates='amenities')

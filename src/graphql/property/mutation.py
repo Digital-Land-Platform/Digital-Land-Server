@@ -1,16 +1,21 @@
 import strawberry
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 from src.models.repository.propertyRepository import PropertyRepository
 from src.models.repository.AmenityRepository import AmenityRepository
-from .services import PropertyService  
-from .index import PropertyInput, PropertyUpdateInput, PropertyType, ImageType
+from src.models.repository.ImageRepository import ImageRepository
+from .services import PropertyService 
+from .index import PropertyInput, PropertyUpdateInput, PropertyType
 from src.graphql.amenity.index import AmenityInput, AmenitiesType, AmenityUpdateInput
+from src.graphql.image.types import ImageType, ImageInput
 from src.middleware.AuthManagment import AuthManagement
 from src.models.UserRole import UserRole
 from src.graphql.users.services import UserService
 from config.database import db
+from src.models.Image import Image
 from src.models.Amenities import Amenities
+from strawberry.file_uploads import Upload
+
 
 # Initialize the services required for property mutations
 property_service = PropertyService(db.SessionLocal())
@@ -23,7 +28,6 @@ class PropertyMutation:
     async def create_property(
         self, 
         property_input: PropertyInput,
-        
     ) -> PropertyType:
         """
         Create a new property. Only users with the role of NOTARY or LAND_OWNER are allowed.
@@ -46,12 +50,15 @@ class PropertyMutation:
             
             if existing_property:
                 raise Exception("A property with the same title and location already exists for this owner.")
-             
+            
+            
             # Create the property
             property_ = await property_service.create_property(
                 property_input=property_input,
-                user_id=property_input.user_id
+                user_id=property_input.user_id,
             )
+            
+                        
             return PropertyType(
                 id=property_.id,
                 title=property_.title,
@@ -65,7 +72,7 @@ class PropertyMutation:
                 country=property_.country,
                 latitude=property_.latitude,
                 longitude=property_.longitude,
-                images=[ImageType(url=image.url) for image in property_.images],
+                images=[ImageType(url=image.url, property_id=image.property_id) for image in property_.images],
                 virtualTourUrl=property_.virtualTourUrl,
                 streetViewUrl=property_.streetViewUrl,
                 amenities=[AmenitiesType(title=amenity.title, icon=amenity.icon) for amenity in property_.amenities],
@@ -99,7 +106,6 @@ class PropertyMutation:
         
         try:
             updated_property = await property_service.update_property(
-                #id=id,
                 property_update_input=property_update_input
             )
         
@@ -120,7 +126,7 @@ class PropertyMutation:
                 country=updated_property.country,
                 latitude=updated_property.latitude,
                 longitude=updated_property.longitude,
-                images=[ImageType(url=image.url) for image in updated_property.images],
+                images=[ImageType(url=image.url, property_id=image.property_id) for image in updated_property.images],
                 virtualTourUrl=updated_property.virtualTourUrl,
                 streetViewUrl=updated_property.streetViewUrl,
                 amenities=[AmenitiesType(title=amenity.title, icon=amenity.icon) for amenity in updated_property.amenities],

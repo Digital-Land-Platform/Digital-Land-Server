@@ -39,8 +39,8 @@ class Property(Base):
     owner_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     user = relationship("User", back_populates="properties")
     
-    images = relationship("Image", back_populates="property", cascade="all, delete-orphan")
-    amenities = relationship('Amenities', secondary=property_amenities, back_populates='properties')
+    images = relationship("Image", backref="properties", cascade="all, delete-orphan", lazy="joined")
+    amenities = relationship('Amenities', secondary=property_amenities, backref='properties', lazy='joined')
     
     @validates('price')
     def validate_price(self, key, value):

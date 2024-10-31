@@ -9,11 +9,13 @@ from src.graphql.userProfile.mutation import UserProfileMutation
 from src.graphql.userProfile.query import UserProfile
 from src.graphql.amenity.mutation import AmenityMutation
 from src.graphql.amenity.query import AmenityQuery
+from src.graphql.image.mutation import ImageMutation
+from src.graphql.image.query import ImageQuery
 
 @strawberry.type
-class Mutation(UserMutation, UserProfileMutation, PropertyMutation, AmenityMutation):
+class Mutation(UserMutation, UserProfileMutation, PropertyMutation, AmenityMutation, ImageMutation):
     pass
 
 @strawberry.type
-class Query(UserQuery, UserProfile, PropertyQuery, AmenityQuery):
+class Query(UserQuery, UserProfile, PropertyQuery, AmenityQuery, ImageQuery):
     pass
