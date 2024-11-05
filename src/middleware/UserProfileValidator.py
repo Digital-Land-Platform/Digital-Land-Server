@@ -1,5 +1,6 @@
 # src/utils/profile_validator.py
 
+from datetime import date, datetime
 import re
 import uuid
 import phonenumbers
@@ -9,10 +10,10 @@ from typing import Dict, Any
 class UserProfileValidator:
     
     @staticmethod
-    def validate_user_id(user_id: Any) -> uuid.UUID:
-        if not isinstance(user_id, uuid.UUID):
+    def validate_id(id: Any) -> uuid.UUID:
+        if not isinstance(id, uuid.UUID):
             try:
-                user_id = uuid.UUID(user_id)
+                user_id = uuid.UUID(id)
             except ValueError:
                 raise ValueError("Invalid user ID format.")
         return user_id
@@ -24,14 +25,23 @@ class UserProfileValidator:
         return name.strip()
 
     @staticmethod
-    def validate_age(age: int) -> int:
+    def validate_age(dob: str) -> date:
+        try:
+            dob_date = datetime.strptime(dob, "%Y-%m-%d").date()  # Adjust the format as needed
+        except ValueError:
+            raise ValueError("Invalid date format. Use YYYY-MM-DD.")
+        
+        today = date.today()
+        age = today.year - dob_date.year - ((today.month, today.day) < (dob_date.month, dob_date.day))
+        
         if not (18 <= age <= 120):
-            raise ValueError("Age must be between 0 and 120.")
-        return age
+            raise ValueError("Age must be between 18 and 120.")
+        
+        return dob_date
 
     @staticmethod
     def validate_gender(gender: str) -> str:
-        if gender not in {"Male", "Female"}:
+        if gender not in {"Male", "Female", "Other"}:
             raise ValueError("Gender must be 'Male', 'Female'.")
         return gender
 
@@ -67,21 +77,20 @@ class UserProfileValidator:
             raise ValueError("Phone number is not in a valid international format.")
 
     @staticmethod
-    def validate_smart_contract(smart_contract: str) -> str:
-        if not smart_contract:
-            raise ValueError("Smart contract cannot be empty.")
-        return smart_contract
+    def validate_license_number(license_number: str) -> str:
+        if not license_number or len(license_number) > 30:
+            raise ValueError("License number must not be empty and should be at most 30 characters.")
+        return license_number.strip()
 
     @staticmethod
     def validate_profile_data(data: Dict[str, Any]) -> Dict[str, Any]:
         validated_data = {}
-        validated_data["user_id"] = UserProfileValidator.validate_user_id(data.user_id)
+        validated_data["user_id"] = UserProfileValidator.validate_id(data.user_id)
         validated_data["first_name"] = UserProfileValidator.validate_name(data.first_name, "First name")
         validated_data["last_name"] = UserProfileValidator.validate_name(data.last_name, "Last name")
-        validated_data["age"] = UserProfileValidator.validate_age(data.age)
+        validated_data["date_of_birth"] = UserProfileValidator.validate_age(data.date_of_birth)
         validated_data["gender"] = UserProfileValidator.validate_gender(data.gender)
-        validated_data["physical_address"] = UserProfileValidator.validate_physical_address(data.physical_address)
-        validated_data["identity_card_number"] = UserProfileValidator.validate_identity_card_number(data.identity_card_number)
-        validated_data["whatsapp_number"] = UserProfileValidator.validate_phone_number(data.whatsapp_number)
-        validated_data["smart_contract"] = UserProfileValidator.validate_smart_contract(data.smart_contract)
+        validated_data["location_id"] = UserProfileValidator.validate_id(data.location_id)
+        validated_data["date_of_birth"] = UserProfileValidator.validate_age(data.date_of_birth)
+        validated_data["license_number"] = UserProfileValidator.validate_license_number(data.license_number)
         return validated_data

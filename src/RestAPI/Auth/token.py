@@ -28,6 +28,7 @@ from src.middleware.AuthManagment import AuthManagement
 from src.graphql.users.services import UserService
 from config.database import db
 from config.config import Config
+from src.models.enums.UserRole import UserRole
 import requests
 import os
 
@@ -76,10 +77,11 @@ async def get_access_token(code: str):
                 return access_token
             else:
                 user_data = {
-                "auth0_id": user_info.get("sub"),  # Auth0 user ID
-                "name": user_info.get("name"),
+                "username": user_info.get("name"),
                 "email": user_info.get("email"),
-                "image": user_info.get("picture")
+                "image": user_info.get("picture"),
+                "role":  UserRole.USER,
+                "verified": user_info.get("email_verified"),
                 }
                 user = User(**user_data)
                 await userService.create_user(user)

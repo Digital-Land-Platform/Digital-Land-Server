@@ -19,6 +19,9 @@ env:
   DEV_DB_USER: ${{ secrets.DB_USERNAME }}
   DEV_DB_PASS: ${{ secrets.DB_PASS }}
   DEV_DB_NAME: ${{ secrets.DB_NAME }}
+  CLOUDINARY_NAME: ${{ secrets.CLOUDINARY_NAME }}
+  CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+  CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
 
 jobs:
   build:

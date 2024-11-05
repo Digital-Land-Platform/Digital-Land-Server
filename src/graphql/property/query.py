@@ -3,7 +3,7 @@ from uuid import UUID
 from typing import Optional, List
 from .services import PropertyService  
 from .mutation import PropertyType 
-from .index import AmenitiesType 
+from .types import AmenitiesType 
 from src.startups.dbConn import db  
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.models.Property import Property

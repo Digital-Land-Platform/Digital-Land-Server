@@ -3,7 +3,7 @@ from typing import Optional, List
 from sqlalchemy.future import select
 from src.models.Property import Property
 from src.models.Image import Image
-from src.models.Amenities import Amenities
+from src.models.Amenity import Amenity
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from sqlalchemy import func
@@ -40,7 +40,7 @@ class PropertyRepository:
         return new_property
 
      
-    async def get_existing_property(self, title: str, location: str, user_id: UUID):
+    async def get_existing_property(self, title: str, location_id: str):
         """
         Get an existing property from the database.
         """
@@ -48,8 +48,7 @@ class PropertyRepository:
             result = await self.db.execute(
                 select(Property).where(
                     func.lower(Property.title) == func.lower(title),
-                    func.lower(Property.location) == func.lower(location),
-                    Property.owner_id == user_id
+                    Property.location_id == location_id
                 )
             )
             return result.scalar()

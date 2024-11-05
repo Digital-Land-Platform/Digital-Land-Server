@@ -1,7 +1,9 @@
 # main.py
 
 from src.RestAPI.Auth import login, token
+from src.RestAPI.Auth import login, token
 import strawberry
+import uvicorn
 import uvicorn
 from fastapi import FastAPI
 from strawberry.fastapi import GraphQLRouter
@@ -12,7 +14,7 @@ from src.startups.dbConn import startDBConnection
 def init_app():
     app = FastAPI()
     startDBConnection(app)
-    
+        
     @app.get("/")
     def read_root():
         return {"Hello": "World"}
@@ -23,6 +25,7 @@ def init_app():
     
     app.include_router(login.router)
     app.include_router(token.router)
+    
 
     schema = strawberry.Schema(query=Query, mutation=Mutation)
     graphql_app = GraphQLRouter(schema)
@@ -37,4 +40,5 @@ app = init_app()
 
 
 if __name__ == "__main__":
+    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

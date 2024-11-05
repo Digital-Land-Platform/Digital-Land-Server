@@ -1,10 +1,10 @@
 import strawberry
 from uuid import UUID
 from typing import Optional, List
-from src.models.Amenities import Amenities
+from src.models.Amenity import Amenity as Amenities
 from src.models.repository.AmenityRepository import AmenityRepository
 from sqlalchemy.ext.asyncio import AsyncSession
-from .index import AmenitiesType, AmenityInput, AmenityUpdateInput
+from .types import AmenitiesType, AmenityInput, AmenityUpdateInput
 class AmenityService:
     def __init__(self, db: AsyncSession):
         """

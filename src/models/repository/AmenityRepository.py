@@ -2,7 +2,7 @@ from typing import List, Optional
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from src.models.Amenities import Amenities
+from src.models.Amenity import Amenity as Amenities
 
 
 class AmenityRepository:

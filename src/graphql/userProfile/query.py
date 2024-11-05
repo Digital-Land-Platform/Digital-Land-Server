@@ -1,8 +1,8 @@
 import strawberry
 from strawberry.types import Info
 from strawberry.directive import DirectiveValue
-from src.models.UserRole import UserRole
-from .index import UserProfileAuditLogType, UserProfileType, UserProfileInput
+from src.models.enums.UserRole import UserRole
+from .types import UserProfileAuditLogType, UserProfileType, UserProfileInput
 from src.models.UserProfile import UserProfile
 from fastapi import HTTPException   
 from .service import UserProfileService

@@ -7,9 +7,6 @@ class Image(Base):
 
     url = Column(String, nullable=False)
     property_id = Column(UUID, ForeignKey("properties.id", ondelete="CASCADE"), nullable=False)
-    
-    # Establish relationship with Property
-    property = relationship("Property", back_populates="images")
 
 
     @validates('url')
