@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Enum, Integer, String, Float, ForeignKey
 from sqlalchemy import Table, Text
 from src.models.Amenity import Amenity
 from src.models.Image import Image
@@ -6,6 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship, validates
 from src.models.Base import Base, BaseModel
 from src.models.Reel import Reel
+from src.models.enums.PropertyStatus import PropertyStatus
 
 
 class Property(Base):
@@ -16,7 +17,7 @@ class Property(Base):
     description = Column(String)
     price = Column(Float)
     size = Column(Float)
-    status = Column(String, default="Pending")
+    status = Column(Enum(PropertyStatus), default=PropertyStatus.PENDING)
     location_id = Column(UUID(as_uuid=True), ForeignKey("locations.id"))
     neighborhood = Column(String)
     latitude = Column(String)
@@ -30,10 +31,10 @@ class Property(Base):
     zoning_information = Column(Text, nullable=True)
     property_amenities = Table("property_amenities", Base.metadata,
                               Column("property_id", UUID(as_uuid=True),
-                                     ForeignKey("properties.id"),
+                                     ForeignKey("properties.id", ondelete="CASCADE"),
                                      nullable=False),
                               Column("amenity_id", UUID(as_uuid=True),
-                                     ForeignKey("amenities.id"),
+                                     ForeignKey("amenities.id", ondelete="CASCADE"),
                                      nullable=False),
                               mysql_charset="latin1",)
     
@@ -42,7 +43,7 @@ class Property(Base):
     transaction = relationship("Transaction", backref="properties", cascade="all, delete, delete-orphan")
     message = relationship("Message", backref="properties", cascade="all, delete, delete-orphan")
     reels = relationship("Reel", backref="properties", cascade="all, delete, delete-orphan")
-    images = relationship("Image", backref="properties", cascade="all, delete-orphan")
+    images = relationship("Image", backref="properties", cascade="all, delete-orphan", lazy="joined")
     
     @validates('price')
     def validate_price(self, key, value):
@@ -54,13 +55,6 @@ class Property(Base):
     def validate_size(self, key, value):
         if value <= 0:
             raise ValueError("Size must be positive")
-        return value
-    
-    @validates('status')
-    def check_status(self, key, value):
-        valid_statuses = ['available', 'pending', 'sold']
-        if value is not None and value not in valid_statuses:
-            raise ValueError(f'Status must be one of: {", ".join(valid_statuses)}.')
         return value
     
     @validates('yearBuilt')

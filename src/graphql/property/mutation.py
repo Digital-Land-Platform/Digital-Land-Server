@@ -13,6 +13,7 @@ from src.graphql.users.services import UserService
 from config.database import db
 from src.models.Amenity import Amenity as Amenities
 
+
 # Initialize the services required for property mutations
 property_service = PropertyService(db.SessionLocal())
 auth_management = AuthManagement()

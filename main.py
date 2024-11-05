@@ -10,14 +10,11 @@ from strawberry.fastapi import GraphQLRouter
 from src.middleware.CustomErrorHandler import CustomException, custom_exception_handler
 from src.graphql.index import Query, Mutation
 from src.startups.dbConn import startDBConnection
-from src.startups.dbConn import startDBConnection
 
 def init_app():
     app = FastAPI()
     startDBConnection(app)
-    
-    startDBConnection(app)
-    
+        
     @app.get("/")
     def read_root():
         return {"Hello": "World"}
@@ -29,8 +26,6 @@ def init_app():
     app.include_router(login.router)
     app.include_router(token.router)
     
-    app.include_router(login.router)
-    app.include_router(token.router)
 
     schema = strawberry.Schema(query=Query, mutation=Mutation)
     graphql_app = GraphQLRouter(schema)
@@ -40,9 +35,6 @@ def init_app():
     app.add_exception_handler(CustomException, custom_exception_handler)
 
     return app
-
-app = init_app()
-
 
 app = init_app()
 

@@ -12,7 +12,6 @@ class AmenitiesType:
     
 @strawberry.input
 class AmenityInput:
-    id: str
     title: str
     icon: str
 

@@ -1,3 +1,4 @@
+from enum import Enum
 import strawberry
 from uuid import UUID
 from typing import Optional, List
@@ -7,13 +8,21 @@ from pydantic import BaseModel, Field, condecimal
 from src.graphql.amenity.types import AmenitiesType
 from src.graphql.location.types import LocationType 
  
+
+@strawberry.enum
+class PropertyStatusType(Enum):
+    SELLING_CANCELLED = 'Selling Cancelled'
+    LISTED = 'Listed'
+    SOLD = 'SOLD'
+    PENDING = 'PENDING'
+
 @strawberry.input
 class PropertyBaseInput:
     title: Optional[str] = None
     description: Optional[str] = None
     price: Optional[float] = None
     size: Optional[float] = None
-    status: Optional[str] = None
+    status: Optional[PropertyStatusType] = None
     #location: Optional[str] = None
     neighborhood: Optional[str] = None
     latitude: Optional[float] = None

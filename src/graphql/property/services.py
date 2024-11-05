@@ -9,11 +9,13 @@ from src.models.Location import Location
 from sqlalchemy.ext.asyncio import AsyncSession
 from .types import PropertyInput, PropertyUpdateInput, PropertyType
 from src.graphql.amenity.types import AmenitiesType, AmenityUpdateInput
+from .types import PropertyStatusType
 from config.database import db as main_db
 from src.models.Image import Image
 from src.models.Amenity import Amenity as Amenities
 from src.middleware.AuthManagment import AuthManagement
 from src.models.enums.PropertyStatus import PropertyStatus
+
 
 
 class PropertyService:
@@ -48,14 +50,23 @@ class PropertyService:
         """
         location_id = await self.location_repository.get_location_by_id(location_id)
         if not location_id:
-            raise ValueError("Location not found for the given location_id")        
+            raise ValueError("Location not found for the given location_id")
+        
+        status = PropertyStatus.PENDING
+        if property_input.status.value == PropertyStatus.LISTED.value:
+            status = PropertyStatus.LISTED
+        elif property_input.status.value == PropertyStatus.SELLING_CANCELLED.value:
+            status = PropertyStatus.SELLING_CANCELLED
+        elif property_input.status.value == PropertyStatus.SOLD.value:
+            status = PropertyStatus.SOLD
+            
         new_property = Property(
             title=property_input.title,
             user_id=property_input.user_id,  
             description=property_input.description,
             price=property_input.price,
             size=property_input.size,
-            status="pending",  
+            status= status,  
             location_id=property_input.location_id,
             neighborhood=str(property_input.neighborhood),  # String column
     latitude=str(property_input.latitude),  # String column
@@ -123,8 +134,14 @@ class PropertyService:
                 property_.location_id = location_id.id
             else:
                 raise ValueError("Location not found for the given location_id")
+        status = PropertyStatus.PENDING
+        if property_update_input.status.value == PropertyStatus.LISTED.value:
+            status = PropertyStatus.LISTED
+        elif property_update_input.status.value == PropertyStatus.SELLING_CANCELLED.value:
+            status = PropertyStatus.SELLING_CANCELLED
+        elif property_update_input.status.value == PropertyStatus.SOLD.value:
+            status = PropertyStatus.SOLD        
 
-        
         if property_update_input.title is not None:
             property_.title = str(property_update_input.title)
         if property_update_input.description is not None:
@@ -133,8 +150,8 @@ class PropertyService:
             property_.price = property_update_input.price
         if property_update_input.size is not None:
             property_.size = property_update_input.size
-        if property_update_input.status is not None and property_update_input.status != "":
-            property_.status = str(property_update_input.status)
+        if property_update_input.status is not None:
+            property_.status = status
         if property_update_input.location_id is not None:
             property_.location_id = property_update_input.location_id
         if property_update_input.neighborhood is not None:
