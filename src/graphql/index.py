@@ -12,11 +12,17 @@ from src.graphql.amenity.query import AmenityQuery
 from src.graphql.image.mutation import ImageMutation
 from src.graphql.image.query import ImageQuery
 from .location.query import LocationQuery
+from src.graphql.courseContent.mutation import CourseContentMutation
+from src.graphql.courseContent.query import ContentQuery
+from src.graphql.course.mutation import CourseMutation
+from src.graphql.course.query import CourseQuery
+from src.graphql.courseCategory.mutation import CourseCategoryMutation
+from src.graphql.courseCategory.query import CourseCategoryQuery
 
 @strawberry.type
-class Mutation(UserMutation, UserProfileMutation, PropertyMutation, AmenityMutation, ImageMutation):
+class Mutation(UserMutation, UserProfileMutation, PropertyMutation, AmenityMutation, ImageMutation, CourseContentMutation, CourseMutation, CourseCategoryMutation):
     pass
 
 @strawberry.type
-class Query(UserQuery, UserProfile, PropertyQuery, AmenityQuery, ImageQuery, LocationQuery):
+class Query(UserQuery, UserProfile, PropertyQuery, AmenityQuery, ImageQuery, LocationQuery, ContentQuery, CourseQuery, CourseCategoryQuery):
     pass
