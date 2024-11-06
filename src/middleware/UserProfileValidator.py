@@ -56,6 +56,13 @@ class UserProfileValidator:
         if not re.fullmatch(r"^\d{16}$", identity_card_number):
             raise ValueError("Identity card number must be a 16-digit number.")
         return identity_card_number
+    
+    @staticmethod
+    def change_str_date(date_str: str, value: str) -> date:
+        try:
+            return datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            raise ValueError(f"Invalid date format for {value}. Use YYYY-MM-DD.")
 
     @staticmethod
     def validate_phone_number(phone_number: str) -> str:

@@ -1,9 +1,7 @@
 # main.py
 
-from src.RestAPI.Auth import login, token
-from src.RestAPI.Auth import login, token
+from src.RestAPI.Auth import login, token, invitation
 import strawberry
-import uvicorn
 import uvicorn
 from fastapi import FastAPI
 from strawberry.fastapi import GraphQLRouter
@@ -25,6 +23,7 @@ def init_app():
     
     app.include_router(login.router)
     app.include_router(token.router)
+    app.include_router(invitation.router)
     
 
     schema = strawberry.Schema(query=Query, mutation=Mutation)
