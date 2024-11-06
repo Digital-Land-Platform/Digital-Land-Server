@@ -12,11 +12,38 @@ from src.graphql.amenity.query import AmenityQuery
 from src.graphql.image.mutation import ImageMutation
 from src.graphql.image.query import ImageQuery
 from .location.query import LocationQuery
+from src.graphql.courseContent.mutation import CourseContentMutation
+from src.graphql.courseContent.query import ContentQuery
+from src.graphql.course.mutation import CourseMutation
+from src.graphql.course.query import CourseQuery
+from src.graphql.courseCategory.mutation import CourseCategoryMutation
+from src.graphql.courseCategory.query import CourseCategoryQuery
+from src.graphql.propertySearch.query import PropertySearchQuery
+from src.graphql.certification.mutation import CertificationMutation
+from src.graphql.certification.query import CertificationQuery
+from src.graphql.notableclient.query import NotableClientQuery
+from src.graphql.notableclient.mutation import NotableClientMutation
+from src.graphql.organization.query import OrganizationQuery
+from src.graphql.organization.mutation import OrganizationMutation
+from src.graphql.organizationProfile.mutation import OrganizationProfileMutation
+from src.graphql.organizatoinStaff.mutation import OrganizationStaffMutation
+from src.graphql.organizatoinStaff.query import OrganizationStaffQuery
+from src.graphql.invitation.query import InvitationQuery
+from src.graphql.invitation.mutation import InvitationMutation
+from src.graphql.organizationProfile.query import OrganizationProfileQuery
+from src.graphql.propertyReels.mutation import ReelMutation
+from src.graphql.propertyReels.query import ReelQuery
+from src.graphql.propertySearch.query import PropertySearchQuery
 
 @strawberry.type
-class Mutation(UserMutation, UserProfileMutation, PropertyMutation, AmenityMutation, ImageMutation):
+
+class Mutation(UserMutation, UserProfileMutation, PropertyMutation, AmenityMutation,ImageMutation,
+               CertificationMutation, NotableClientMutation, OrganizationMutation, OrganizationProfileMutation,
+               OrganizationStaffMutation, InvitationMutation, ReelMutation, CourseContentMutation, CourseMutation, CourseCategoryMutation):
     pass
 
 @strawberry.type
-class Query(UserQuery, UserProfile, PropertyQuery, AmenityQuery, ImageQuery, LocationQuery):
+class Query(UserQuery, UserProfile, PropertyQuery, AmenityQuery, LocationQuery,
+            CertificationQuery, NotableClientQuery, ImageQuery, OrganizationQuery, OrganizationStaffQuery,
+            InvitationQuery, OrganizationProfileQuery, PropertySearchQuery, ReelQuery,  ContentQuery, CourseQuery, CourseCategoryQuery):
     pass
