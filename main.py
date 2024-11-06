@@ -1,9 +1,7 @@
 # main.py
 
 from src.RestAPI.Auth import login, token
-from src.RestAPI.Auth import login, token
 import strawberry
-import uvicorn
 import uvicorn
 from fastapi import FastAPI
 from strawberry.fastapi import GraphQLRouter
