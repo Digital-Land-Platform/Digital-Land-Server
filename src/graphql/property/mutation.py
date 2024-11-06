@@ -1,17 +1,22 @@
 import strawberry
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 from src.models.repository.propertyRepository import PropertyRepository
 from src.models.repository.AmenityRepository import AmenityRepository
+from src.models.repository.ImageRepository import ImageRepository
 from src.models.repository.LocationRepository import LocationRepository
-from .services import PropertyService  
-from .types import PropertyInput, PropertyUpdateInput, PropertyType, ImageType
+from .services import PropertyService 
+from .types import PropertyInput, PropertyUpdateInput, PropertyType
 from src.graphql.amenity.types import AmenityInput, AmenitiesType, AmenityUpdateInput
+from src.graphql.image.types import ImageTypes, ImageInput
 from src.middleware.AuthManagment import AuthManagement
 from src.models.enums.UserRole import UserRole
 from src.graphql.users.services import UserService
 from config.database import db
+from src.models.Image import Image
 from src.models.Amenity import Amenity as Amenities
+from strawberry.file_uploads import Upload
+
 
 
 # Initialize the services required for property mutations
@@ -25,7 +30,6 @@ class PropertyMutation:
     async def create_property(
         self, 
         property_input: PropertyInput,
-        
     ) -> PropertyType:
         """
         Create a new property. Only users with the role of NOTARY or LAND_OWNER are allowed.
@@ -47,7 +51,8 @@ class PropertyMutation:
             
             if existing_property:
                 raise Exception("A property with the same title and location already exists for this owner.")
-             
+            
+            
             # Create the property
             property_ = await property_service.create_property(
                 property_input=property_input,
@@ -55,6 +60,8 @@ class PropertyMutation:
                 location_id=property_input.location_id
                 
             )
+            
+                        
             return PropertyType(
                 id=property_.id,
                 title=property_.title,
@@ -66,9 +73,9 @@ class PropertyMutation:
                 neighborhood=property_.neighborhood,
                 latitude=property_.latitude,
                 longitude=property_.longitude,
-                images=[ImageType(url=image.url) for image in property_.images],
+                images=[ImageTypes(url=image.url, property_id=image.property_id) for image in property_.images],
                 streetViewUrl=property_.street_view_url,
-                amenities=[AmenitiesType(id=amenity.id, title=amenity.title, icon=amenity.icon) for amenity in property_.amenities],
+                amenities=[AmenitiesType(title=amenity.title, icon=amenity.icon) for amenity in property_.amenities],
                 yearBuilt=property_.year_built,
                 legalStatus=property_.legal_status,
                 disclosure=property_.disclosure,
@@ -83,7 +90,7 @@ class PropertyMutation:
     @strawberry.mutation
     async def update_property(
         self,
-        id: str,
+        id: UUID,
         property_update_input: PropertyUpdateInput,
         info: strawberry.types.info   
     ) -> PropertyType:
@@ -118,9 +125,9 @@ class PropertyMutation:
                 neighborhood=updated_property.neighborhood,
                 latitude=updated_property.latitude,
                 longitude=updated_property.longitude,
-                images=[ImageType(url=image.url) for image in updated_property.images],
+                images=[ImageTypes(url=image.url, property_id=image.property_id) for image in updated_property.images],
                 streetViewUrl=updated_property.street_view_url,
-                amenities=[AmenitiesType(id=amenity.id, title=amenity.title, icon=amenity.icon) for amenity in updated_property.amenities],
+                amenities=[AmenitiesType(title=amenity.title, icon=amenity.icon) for amenity in updated_property.amenities],
                 yearBuilt=updated_property.year_built,
                 legalStatus=updated_property.legal_status,
                 disclosure=updated_property.disclosure,

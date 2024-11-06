@@ -21,6 +21,7 @@ markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
 phonenumbers==8.13.48
+cloudinary==1.26.0
 pre-commit==3.8.0
 promise==2.3
 pydantic==2.8.2

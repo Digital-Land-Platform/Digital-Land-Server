@@ -7,7 +7,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field, condecimal
 from src.graphql.amenity.types import AmenitiesType
 from src.graphql.location.types import LocationType 
- 
+from src.graphql.image.types import ImageTypes , ImageInput, ImageUpdateInput
 
 @strawberry.enum
 class PropertyStatusType(Enum):
@@ -37,11 +37,11 @@ class PropertyBaseInput:
     zoningInformation: Optional[str] = None
     #amenities: Optional[List[UUID]] = None
 #The PropertyType for property data
-    
+  
 @strawberry.type
 class ImageType:
     url: str
-    
+     
 @strawberry.type
 class PropertyType:
     id: str | None
@@ -54,7 +54,7 @@ class PropertyType:
     location_id: str | None 
     latitude: Optional[float] | None
     longitude: Optional[float] | None
-    images: List[ImageType] | None
+    images: List[ImageTypes] | None
     streetViewUrl: Optional[str] | None
     yearBuilt: Optional[int] | None
     legalStatus: str | None
@@ -71,11 +71,13 @@ class PropertyInput(PropertyBaseInput):
     # Accept the user_id in input but map it to owner_id in logic
     user_id: UUID
     amenity_ids: Optional[List[UUID]] = None
+    images: Optional[List[ImageInput]] = None
     location_id: Optional[UUID] = None
 # The PropertyUpdateInput for updating an existing property
 @strawberry.input
 class PropertyUpdateInput(PropertyBaseInput):
     id: str
     amenity_ids: Optional[List[UUID]] = None
+    images: Optional[List[ImageUpdateInput]] = None
     location_id: Optional[UUID] = None
     

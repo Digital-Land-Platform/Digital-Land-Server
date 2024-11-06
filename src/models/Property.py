@@ -39,7 +39,7 @@ class Property(Base):
                               mysql_charset="latin1",)
     
     amenities = relationship("Amenity", secondary=property_amenities,
-                                 viewonly=False)
+                                 viewonly=False, lazy="joined")
     transaction = relationship("Transaction", backref="properties", cascade="all, delete, delete-orphan")
     message = relationship("Message", backref="properties", cascade="all, delete, delete-orphan")
     reels = relationship("Reel", backref="properties", cascade="all, delete, delete-orphan")

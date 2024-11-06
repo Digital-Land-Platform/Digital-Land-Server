@@ -2,6 +2,7 @@
 from typing import Optional, List
 from src.models.repository.propertyRepository import PropertyRepository
 from src.models.repository.AmenityRepository import AmenityRepository
+from src.models.repository.ImageRepository import ImageRepository
 from src.models.repository.LocationRepository import LocationRepository
 from uuid import UUID
 from src.models.Property import Property
@@ -9,11 +10,13 @@ from src.models.Location import Location
 from sqlalchemy.ext.asyncio import AsyncSession
 from .types import PropertyInput, PropertyUpdateInput, PropertyType
 from src.graphql.amenity.types import AmenitiesType, AmenityUpdateInput
+from src.graphql.image.types import ImageTypes, ImageInput, ImageUpdateInput
 from .types import PropertyStatusType
 from config.database import db as main_db
-from src.models.Image import Image
+from src.graphql.image.services import ImageService 
 from src.models.Amenity import Amenity as Amenities
 from src.middleware.AuthManagment import AuthManagement
+from strawberry.file_uploads import Upload
 from src.models.enums.PropertyStatus import PropertyStatus
 
 
@@ -30,12 +33,16 @@ class PropertyService:
         self.repository = PropertyRepository(db)    
         self.amenity_repository = AmenityRepository(db)
         self.location_repository = LocationRepository(main_db)
+        self.image_repository = ImageRepository(db)
+        self.image_service = ImageService(db)
+        
 
     async def create_property(
         self,
         property_input: PropertyInput,
         user_id: UUID,
         amenity_ids: Optional[List[UUID]] = None,
+        images: Optional[List[ImageInput]] = None,
         location_id: Optional[UUID] = None
     ) -> Property:
         """
@@ -79,10 +86,15 @@ class PropertyService:
             future_development_plans=property_input.futureDevelopmentPlans,
             zoning_information=property_input.zoningInformation
         )
+        new_property = await self.repository.create_property(new_property)
+        
         
         if property_input.images:
-            new_property.images = [Image(url=url) for url in property_input.images]
-
+            for image_input in property_input.images:
+                if image_input.file:
+                    image_input = ImageInput(file=image_input.file)
+                    await self.image_service.create_image(image_input, new_property.id)
+                    
         if property_input.amenity_ids:
             amenities = await self.amenity_repository.get_amenities_by_ids(property_input.amenity_ids)
             new_property.amenities = amenities
@@ -110,6 +122,7 @@ class PropertyService:
         self,
         property_update_input: PropertyUpdateInput,
         amenity_ids: Optional[List[UUID]] = None,
+        images: Optional[List[ImageUpdateInput]] = None,
         location_id: Optional[UUID] = None,
     ) -> Optional[Property]:
         """
@@ -179,10 +192,11 @@ class PropertyService:
 
         # Update images and amenities if provided
         if property_update_input.images is not None:
-            for url in property_update_input.images:
-                image = Image(url=url, property_id=property_.id)
-                self.db.add(image)
-                                
+            for image_update_input in property_update_input.images:
+                if image_update_input.image_id and (image_update_input.file or image_update_input.url):
+                    print(f"Updating image with ID: {image_update_input.image_id}")
+                    await self.image_service.update_image(image_update_input)  
+                              
         if property_update_input.amenity_ids is not None:
             # Clear existing amenities
             existing_amenities = {amenity.id for amenity in property_.amenities}
