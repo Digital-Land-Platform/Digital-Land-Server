@@ -3,7 +3,7 @@ from sqlalchemy import ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from src.models.Base import Base
-from src.models.AuditActions import AuditActions
+from src.models.enums.AuditActions import AuditActions
 
 
 class UserProfileAuditLog(Base):

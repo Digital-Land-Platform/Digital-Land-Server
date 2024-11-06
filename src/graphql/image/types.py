@@ -5,7 +5,6 @@ from strawberry.file_uploads import Upload
 
 @strawberry.input
 class ImageInput:
-    #property_id: UUID
     file: Optional[Upload] = None 
     url: Optional[str] = None
     
@@ -15,7 +14,7 @@ class ImageUpdateInput:
     file: Optional[Upload] = None 
     url: Optional[str] = None
 @strawberry.type
-class ImageType:
+class ImageTypes:
     id: Optional[UUID] = None
     url: Optional[str] = None
     property_id: UUID

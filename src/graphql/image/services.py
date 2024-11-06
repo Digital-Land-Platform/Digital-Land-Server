@@ -3,7 +3,7 @@ from typing import Optional, List, Union
 import cloudinary.uploader
 from src.models.repository.ImageRepository import ImageRepository
 from src.models.Image import Image
-from src.graphql.image.types import ImageInput, ImageUpdateInput, ImageType
+from src.graphql.image.types import ImageInput, ImageUpdateInput, ImageTypes
 from config.database import db
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import UploadFile, HTTPException

@@ -3,7 +3,7 @@
 import enum
 
 class UserRole(enum.Enum):
-    LAND_OWNER = "Land Owner"
-    BUYER = "Buyer"
+    BROKER = "Broker"
+    USER = "User"
     NOTARY = "Notary"
     ADMIN = "Admin"

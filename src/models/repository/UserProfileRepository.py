@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
 from src.models.UserProfile import UserProfile
-from src.models.AuditActions import AuditActions
+from src.models.enums.AuditActions import AuditActions
 from .UserProfileAuditLogRepository import UserProfileAuditLogRepository
 
 class UserProfileRepository:

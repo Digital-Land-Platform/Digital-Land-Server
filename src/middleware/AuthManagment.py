@@ -26,7 +26,7 @@ import jwt  # PyJWT, not the jose.jwt
 from jwt import algorithms
 from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError, InvalidTokenError
 from src.graphql.users.services import UserService
-from src.models.UserRole import UserRole
+from src.models.enums.UserRole import UserRole
 from config.database import db
 
 auth_domain = os.getenv("AUTH_DOMAIN", "Test_auth0.com")

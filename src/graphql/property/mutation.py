@@ -4,17 +4,19 @@ from uuid import UUID
 from src.models.repository.propertyRepository import PropertyRepository
 from src.models.repository.AmenityRepository import AmenityRepository
 from src.models.repository.ImageRepository import ImageRepository
+from src.models.repository.LocationRepository import LocationRepository
 from .services import PropertyService 
-from .index import PropertyInput, PropertyUpdateInput, PropertyType
-from src.graphql.amenity.index import AmenityInput, AmenitiesType, AmenityUpdateInput
-from src.graphql.image.types import ImageType, ImageInput
+from .types import PropertyInput, PropertyUpdateInput, PropertyType
+from src.graphql.amenity.types import AmenityInput, AmenitiesType, AmenityUpdateInput
+from src.graphql.image.types import ImageTypes, ImageInput
 from src.middleware.AuthManagment import AuthManagement
-from src.models.UserRole import UserRole
+from src.models.enums.UserRole import UserRole
 from src.graphql.users.services import UserService
 from config.database import db
 from src.models.Image import Image
-from src.models.Amenities import Amenities
+from src.models.Amenity import Amenity as Amenities
 from strawberry.file_uploads import Upload
+
 
 
 # Initialize the services required for property mutations
@@ -44,8 +46,7 @@ class PropertyMutation:
             #check if property exists
             existing_property = await property_service.get_existing_property(
                 title=property_input.title,
-                location=property_input.location,
-                owner_id=property_input.user_id
+                location_id=property_input.location_id
             )
             
             if existing_property:
@@ -56,6 +57,8 @@ class PropertyMutation:
             property_ = await property_service.create_property(
                 property_input=property_input,
                 user_id=property_input.user_id,
+                location_id=property_input.location_id
+                
             )
             
                         
@@ -66,23 +69,20 @@ class PropertyMutation:
                 price=property_.price,
                 size=property_.size,
                 status=property_.status,
-                location=property_.location,
+                location_id=property_input.location_id,
                 neighborhood=property_.neighborhood,
-                city=property_.city,
-                country=property_.country,
                 latitude=property_.latitude,
                 longitude=property_.longitude,
-                images=[ImageType(url=image.url, property_id=image.property_id) for image in property_.images],
-                virtualTourUrl=property_.virtualTourUrl,
-                streetViewUrl=property_.streetViewUrl,
+                images=[ImageTypes(url=image.url, property_id=image.property_id) for image in property_.images],
+                streetViewUrl=property_.street_view_url,
                 amenities=[AmenitiesType(title=amenity.title, icon=amenity.icon) for amenity in property_.amenities],
-                yearBuilt=property_.yearBuilt,
-                legalStatus=property_.legalStatus,
+                yearBuilt=property_.year_built,
+                legalStatus=property_.legal_status,
                 disclosure=property_.disclosure,
-                energyRating=property_.energyRating,
-                futureDevelopmentPlans=property_.futureDevelopmentPlans,
-                zoningInformation=property_.zoningInformation,
-                owner_id=property_.owner_id
+                energyRating=property_.energy_rating,
+                futureDevelopmentPlans=property_.future_development_plans,
+                zoningInformation=property_.zoning_information,
+                owner_id=property_.user_id
             )
         except Exception as e:
             raise Exception(f"Failed to create property: {e}")
@@ -106,6 +106,7 @@ class PropertyMutation:
         
         try:
             updated_property = await property_service.update_property(
+                #id=id,
                 property_update_input=property_update_input
             )
         
@@ -120,23 +121,20 @@ class PropertyMutation:
                 price=updated_property.price,
                 size=updated_property.size,
                 status=updated_property.status,
-                location=updated_property.location,
+                location_id=updated_property.location_id,
                 neighborhood=updated_property.neighborhood,
-                city=updated_property.city,
-                country=updated_property.country,
                 latitude=updated_property.latitude,
                 longitude=updated_property.longitude,
-                images=[ImageType(url=image.url, property_id=image.property_id) for image in updated_property.images],
-                virtualTourUrl=updated_property.virtualTourUrl,
-                streetViewUrl=updated_property.streetViewUrl,
+                images=[ImageTypes(url=image.url, property_id=image.property_id) for image in updated_property.images],
+                streetViewUrl=updated_property.street_view_url,
                 amenities=[AmenitiesType(title=amenity.title, icon=amenity.icon) for amenity in updated_property.amenities],
-                yearBuilt=updated_property.yearBuilt,
-                legalStatus=updated_property.legalStatus,
+                yearBuilt=updated_property.year_built,
+                legalStatus=updated_property.legal_status,
                 disclosure=updated_property.disclosure,
-                energyRating=updated_property.energyRating,
-                futureDevelopmentPlans=updated_property.futureDevelopmentPlans,
-                zoningInformation=updated_property.zoningInformation,
-                owner_id=updated_property.owner_id
+                energyRating=updated_property.energy_rating,
+                futureDevelopmentPlans=updated_property.future_development_plans,
+                zoningInformation=updated_property.zoning_information,
+                owner_id=updated_property.user_id
             )
         except Exception as e:
             raise Exception(f"Failed to update property: {e}")

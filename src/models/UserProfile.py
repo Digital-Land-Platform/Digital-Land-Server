@@ -1,7 +1,9 @@
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String, Date
 from sqlalchemy import ForeignKey,UUID
+from sqlalchemy.orm import relationship
+from src.models.OrganizationStaff import OrganizationStaff
+from src.models.Invitation import Invitation
 from .Base import Base
-from src.models.UserProfileAuditLog import UserProfileAuditLog
 
 class UserProfile(Base):
 
@@ -9,9 +11,10 @@ class UserProfile(Base):
     user_id = Column(UUID, ForeignKey("users.id"), unique=True, index=True)
     first_name = Column(String)
     last_name = Column(String)
-    age = Column(Integer)
     gender = Column(String)
-    physical_address = Column(String)
-    identity_card_number = Column(String)
-    whatsapp_number = Column(String)
-    smart_contract = Column(String)
+    location_id = Column(UUID, ForeignKey("locations.id"))
+    date_of_birth = Column(Date)
+    license_number = Column(String)
+
+    organization_staff = relationship("OrganizationStaff", backref="user_profiles", cascade="all, delete, delete-orphan")
+    invitater = relationship("Invitation", backref="user_profiles", cascade="all, delete, delete-orphan")

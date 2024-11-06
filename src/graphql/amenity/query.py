@@ -2,9 +2,9 @@ import strawberry
 from uuid import UUID
 from typing import Optional, List
 from .services import AmenityService
-from .index import AmenitiesType
+from .types import AmenitiesType
 from src.startups.dbConn import db
-from src.models.Amenities import Amenities
+from src.models.Amenity import Amenity as Amenities
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.models.repository.AmenityRepository import AmenityRepository
 
