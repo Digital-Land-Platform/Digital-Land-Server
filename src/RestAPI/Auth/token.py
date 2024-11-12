@@ -22,6 +22,7 @@ Attributes:
     redirect_uri (str): The URI to redirect to after authentication.
 """
 
+from datetime import datetime
 from fastapi import APIRouter, HTTPException
 from src.models.User import User
 from src.middleware.AuthManagment import AuthManagement
@@ -29,12 +30,15 @@ from src.graphql.users.services import UserService
 from config.database import db
 from config.config import Config
 from src.models.enums.UserRole import UserRole
+from src.graphql.invitation.services import InvitationService
+from src.models.enums.InvitationStatus import InvitationStatus
 import requests
 import os
 
 router = APIRouter()
 auth_managment = AuthManagement()
 userService = UserService(db.SessionLocal())
+invitation_service = InvitationService(db)
 
 client_id = Config.get_env_variable("CLIENT_ID")
 client_secret = Config.get_env_variable("CLIENT_SECRET")
@@ -43,7 +47,7 @@ rediredt_uri = Config.get_env_variable("REDIRECT_URI")
 audience = Config.get_env_variable("AUDUENCE")
 
 @router.get("/token")
-async def get_access_token(code: str):
+async def get_access_token(code: str, state: str = None):
         """
         Exchanges an authorization code for an access token.
 
@@ -72,6 +76,10 @@ async def get_access_token(code: str):
             user_info = auth_managment.get_user_info(access_token)
             if not user_info.get("email_verified"):
                 raise HTTPException(status_code=400, detail="Failed to create user, Email is not verified")
+            if state:
+                invitation = await invitation_service.verify_invitation(state, user_info.get("email"))
+                if not invitation:
+                    raise HTTPException(status_code=400, detail="Failed to verify invitation")                    
             exist_user = await userService.get_user_by_email(user_info.get("email"))
             if exist_user:
                 return access_token
