@@ -42,6 +42,7 @@ class EmailHandler:
                                 </p>
                                 <p>If you have any questions, please contact us for support.</p>
                                 <p>Best regards,<br>Global Real Estate</p>
+
                             </body>
                         </html>
                         """
