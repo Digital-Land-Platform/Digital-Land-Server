@@ -17,7 +17,7 @@ class OrganizationMutation:
 
     @strawberry.mutation
     @auth_management.role_required([UserRole.ADMIN, UserRole.BROKER, UserRole.NOTARY, UserRole.USER])
-    async def create_organization(self, info: Info, organization_data: OrganizationInput) -> OrganizationStaffType:
+    async def create_organization(self, info: Info, organization_data: OrganizationInput) -> OrganizationType:
         try:
             token = info.context["request"].headers.get("Authorization").split(" ")[1]
             user_info = auth_management.get_user_info(token)
@@ -25,7 +25,7 @@ class OrganizationMutation:
             organization = await organization_service.create_organization(organization_data, user_info.get("email"))
             if not organization:
                 raise Exception("Failed to create Organization")
-            return await OrganizationStaffType.from_orm(db, organization)
+            return OrganizationType.from_orm(organization)
         except HTTPException as e:
             raise strawberry.exceptions.GraphQLError(f"Failed to create Organization: {e}")
 
@@ -52,7 +52,7 @@ class OrganizationMutation:
 
     @strawberry.mutation
     @auth_management.role_required([UserRole.ADMIN, UserRole.BROKER, UserRole.NOTARY, UserRole.USER])
-    async def delete_organization(self, org_id: str) -> str:
+    async def delete_organization(self, info, org_id: str) -> str:
         try:
             message = await organization_service.delete_organization(org_id)
             return message

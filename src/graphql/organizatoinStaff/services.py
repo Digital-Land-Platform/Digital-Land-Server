@@ -29,8 +29,9 @@ class OrganizationStaffService:
                 raise Exception("User not found")
             if not await self.organization_repo.get_organization(organization_staff_data.get("organization_id")):
                 raise Exception("Organization not found")
-            organization_staff_data["start_date"] = UserProfileValidator.change_str_date(organization_staff_data.get("start_date"), "start_date")
-            if organization_staff_data["end_date"]:
+            if organization_staff_data.get("start_date"):
+                organization_staff_data["start_date"] = UserProfileValidator.change_str_date(organization_staff_data.get("start_date"), "start_date")
+            if organization_staff_data.get("end_date"):
                 organization_staff_data["end_date"] = UserProfileValidator.change_str_date(organization_staff_data.get("end_date"), "end_date")
             else:
                 organization_staff_data.pop("end_date")

@@ -30,13 +30,13 @@ class OrganizationService:
             if not user_profile:
                 raise Exception("User profile not found")
             organization_staff = {
+                "organization_id": organization_data.pop("organization_id"),
                 "user_id": str(user_profile.id),
                 "role": organization_data.pop("role"),
                 "start_date": organization_data.pop("start_date"),
                 "end_date": organization_data.pop("end_date"),
             }
             organization_data.pop("user_id")
-            organization_data.pop("organization_id")
             if organization_data["issue_date"]:
                 organization_data["issue_date"] = UserProfileValidator.change_str_date(organization_data.get("issue_date"), "issue_date")
             if organization_data.get("expiration_date"):
@@ -47,7 +47,8 @@ class OrganizationService:
             organization = Organization(**organization_data)
             org = await self.organization_repo.create_organization(organization)
             organization_staff["organization_id"] = str(org.id)
-            return await self.org_staff_service.create_organization_staff(organization_staff)
+            await self.org_staff_service.create_organization_staff(organization_staff)
+            return org
         except Exception as e:
             raise Exception(f"Failed to create Organization: {e}")
     

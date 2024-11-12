@@ -26,6 +26,7 @@ env:
   EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
   EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
   EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+  IMAGE_URL: ${{ secrets.IMAGE_URL }}
 
 jobs:
   build:

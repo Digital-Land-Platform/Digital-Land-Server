@@ -1,3 +1,4 @@
+from datetime import datetime
 from src.models.Invitation import Invitation
 from src.models.enums.InvitationStatus import InvitationStatus
 from src.models.repository.InvitationRepository import InvitationRepository
@@ -31,7 +32,10 @@ class InvitationService:
                 raise Exception("Organization not found")
             if not await self.user_profile_service.get_user_profile_by_id(invitation.get("inviter_id")):
                 raise Exception("User not found")
-            invitation["sent_at"] = UserProfileValidator.change_str_date(invitation.get("sent_at"), "sent_at")
+            if invitation.get("sent_at"):
+                invitation["sent_at"] = UserProfileValidator.change_str_date(invitation.get("sent_at"), "sent_at")
+            else:
+                invitation["sent_at"] = datetime.now()
             invitation_data = Invitation(**invitation)
             return await self.invitation_repository.create_invitation(invitation_data)
         except Exception as e:
@@ -64,3 +68,18 @@ class InvitationService:
             return await self.invitation_repository.get_invitation_by_id(invitation_id)
         except Exception as e:
             raise Exception(f"Failed to get invitation: {e}")
+    
+    async def verify_invitation(self, invitation_id: str, user_email:str) -> bool:
+        try:
+            invitation = await self.invitation_repository.get_invitation_by_id(invitation_id)
+            if invitation:
+                updated_invitation = {
+                    "status": InvitationStatus.ACCEPTED,
+                    "responded_at":  datetime.now()
+                }
+                await self.update_invitation(invitation_id, updated_invitation)
+                return True
+            else:
+                return False
+        except Exception as e:
+            raise Exception(f"Failed to verify invitation: {e}")
