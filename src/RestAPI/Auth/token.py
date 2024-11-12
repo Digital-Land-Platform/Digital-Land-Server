@@ -77,16 +77,9 @@ async def get_access_token(code: str, state: str = None):
             if not user_info.get("email_verified"):
                 raise HTTPException(status_code=400, detail="Failed to create user, Email is not verified")
             if state:
-                invitation = await invitation_service.get_invitation_by_id(state)
-                if invitation:
-                    print("invitation", invitation.__dict__)
-                    if invitation.invitee_email != user_info.get("email"):
-                        raise HTTPException(status_code=400, detail="Failed to create user, Email does not match")
-                    invitaion_data = {
-                         "status": InvitationStatus.ACCEPTED,
-                         "responded_at":  datetime.now()
-                    }
-                    await invitation_service.update_invitation(invitation.id, invitaion_data)
+                invitation = await invitation_service.verify_invitation(state, user_info.get("email"))
+                if not invitation:
+                    raise HTTPException(status_code=400, detail="Failed to verify invitation")                    
             exist_user = await userService.get_user_by_email(user_info.get("email"))
             if exist_user:
                 return access_token

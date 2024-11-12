@@ -1,6 +1,6 @@
 # main.py
 
-from src.RestAPI.Auth import login, token, invitation
+from src.RestAPI.Auth import login, token
 import strawberry
 import uvicorn
 from fastapi import FastAPI
@@ -23,7 +23,6 @@ def init_app():
     
     app.include_router(login.router)
     app.include_router(token.router)
-    app.include_router(invitation.router)
     
 
     schema = strawberry.Schema(query=Query, mutation=Mutation)

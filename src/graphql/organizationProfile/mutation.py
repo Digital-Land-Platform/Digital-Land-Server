@@ -13,7 +13,7 @@ class OrganizationProfileMutation:
 
     @strawberry.mutation
     @auth_management.role_required([UserRole.ADMIN, UserRole.BROKER, UserRole.NOTARY, UserRole.USER])
-    async def create_organization_profile(self, organization_profile_input: OrganizationProfileInput) -> OrganizationProfileType:
+    async def create_organization_profile(self, info, organization_profile_input: OrganizationProfileInput) -> OrganizationProfileType:
         try:
             organization_profile_input = vars(organization_profile_input)
             organization_profile = await organization_profile_service.create_organization_profile(organization_profile_input)
@@ -25,7 +25,7 @@ class OrganizationProfileMutation:
 
     @strawberry.mutation
     @auth_management.role_required([UserRole.ADMIN, UserRole.BROKER, UserRole.NOTARY, UserRole.USER])
-    async def update_organization_profile(self, org_id: str, org_profile_data: OrganizationProfileInput) -> OrganizationProfileType:
+    async def update_organization_profile(self, info, org_id: str, org_profile_data: OrganizationProfileInput) -> OrganizationProfileType:
         try:
             org_profile_data = vars(org_profile_data)
             organization_profile = await organization_profile_service.update_organization_profile(org_id, org_profile_data)
@@ -37,7 +37,7 @@ class OrganizationProfileMutation:
 
     @strawberry.mutation
     @auth_management.role_required([UserRole.ADMIN, UserRole.BROKER, UserRole.NOTARY, UserRole.USER])
-    async def delete_organization_profile(self, org_id: str) -> str:
+    async def delete_organization_profile(self, info, org_id: str) -> str:
         try:
             message = await organization_profile_service.delete_organization_profile(org_id)
             return message
