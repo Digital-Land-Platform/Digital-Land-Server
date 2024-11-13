@@ -1,6 +1,9 @@
 import smtplib
 import sendgrid
 from sendgrid.helpers.mail import Mail, Email, To, Content
+from config.config import Config
+
+image_url = Config.get_env_variable("IMAGE_URL")
 
 class EmailHandler:
     
@@ -35,10 +38,11 @@ class EmailHandler:
                                     border-radius: 5px;
                                 ">Verify Now</a>
                                 <p style="margin-top: 20px;">
-                                    <img src="{"https://images.app.goo.gl/7RfB5hUuLC1LGYNv5"}" alt="Organization Logo" style="width: 150px; height: auto;">
+                                    <img src="{image_url}" alt="Organization Logo" style="width: 150px; height: auto;">
                                 </p>
                                 <p>If you have any questions, please contact us for support.</p>
-                                <p>Best regards,<br>{invitee_name}</p>
+                                <p>Best regards,<br>Global Real Estate</p>
+
                             </body>
                         </html>
                         """
