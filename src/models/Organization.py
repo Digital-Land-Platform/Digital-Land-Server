@@ -12,7 +12,7 @@ class Organization(Base):
     __tablename__ = "organizations"
     
     name = Column(String, nullable=False)
-    TIN = Column(String, nullable=False) # Tax Identifier Number
+    TIN = Column(String, nullable=False)
     issue_date = Column(Date, nullable=False)
     expiration_date = Column(Date, nullable=True)
     is_verified = Column(Boolean, default=False)

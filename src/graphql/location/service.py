@@ -22,4 +22,16 @@ class LocationService:
         """
         return await self.location_repo.get_location_by_id(location_id)
 
+    async def get_all_locations(self) -> list[Location]:
+        """
+        Retrieve all locations.
+
+        Returns:
+            list[Location]: A list of all locations.
+        """
+        try:
+            return await self.location_repo.get_all_locations()
+        except Exception as e:
+            raise Exception(f"Failed to fetch all locations: {e}")
+
     

@@ -36,3 +36,20 @@ class LocationRepository:
                     return location
         except Exception as e:
             raise Exception(f"Failed to fetch location by ID: {e}")
+    
+    async def get_all_locations(self) -> list[Location]:
+        """
+        Fetch all locations.
+
+        Returns:
+            list[Location]: A list of all locations.
+        """
+        try:
+            async with self.db:
+                async with self.db.session as session:
+                    statement = select(Location)
+                    result = await session.execute(statement)
+                    locations = result.scalars().all()
+                    return locations
+        except Exception as e:
+            raise Exception(f"Failed to fetch all locations: {e}")

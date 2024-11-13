@@ -12,18 +12,30 @@ from src.graphql.amenity.query import AmenityQuery
 from src.graphql.image.mutation import ImageMutation
 from src.graphql.image.query import ImageQuery
 from .location.query import LocationQuery
-from src.graphql.courseContent.mutation import CourseContentMutation
-from src.graphql.courseContent.query import ContentQuery
-from src.graphql.course.mutation import CourseMutation
-from src.graphql.course.query import CourseQuery
-from src.graphql.courseCategory.mutation import CourseCategoryMutation
-from src.graphql.courseCategory.query import CourseCategoryQuery
+from .certification.mutation import CertificationMutation
+from .certification.query import CertificationQuery
+from .notableclient.query import NotableClientQuery
+from .notableclient.mutation import NotableClientMutation
+from .organization.query import OrganizationQuery
+from .organization.mutation import OrganizationMutation
+from .organizationProfile.mutation import OrganizationProfileMutation
+from .organizatoinStaff.mutation import OrganizationStaffMutation
+from .organizatoinStaff.query import OrganizationStaffQuery
+from .invitation.query import InvitationQuery
+from .invitation.mutation import InvitationMutation
+from .organizationProfile.query import OrganizationProfileQuery
+
 from src.graphql.propertySearch.query import PropertySearchQuery
 
 @strawberry.type
-class Mutation(UserMutation, UserProfileMutation, PropertyMutation, AmenityMutation, ImageMutation, CourseContentMutation, CourseMutation, CourseCategoryMutation):
+
+class Mutation(UserMutation, UserProfileMutation, PropertyMutation, AmenityMutation,ImageMutation,
+               CertificationMutation, NotableClientMutation, OrganizationMutation, OrganizationProfileMutation,
+               OrganizationStaffMutation, InvitationMutation):
     pass
 
 @strawberry.type
-class Query(UserQuery, UserProfile, PropertyQuery, AmenityQuery, ImageQuery, LocationQuery, ContentQuery, CourseQuery, CourseCategoryQuery, PropertySearchQuery):
+class Query(UserQuery, UserProfile, PropertyQuery, AmenityQuery, LocationQuery,
+            CertificationQuery, NotableClientQuery, ImageQuery, OrganizationQuery, OrganizationStaffQuery,
+            InvitationQuery, OrganizationProfileQuery, PropertySearchQuery):
     pass
