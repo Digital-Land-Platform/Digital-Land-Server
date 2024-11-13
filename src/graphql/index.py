@@ -25,6 +25,7 @@ from .invitation.query import InvitationQuery
 from .invitation.mutation import InvitationMutation
 from .organizationProfile.query import OrganizationProfileQuery
 
+from src.graphql.propertySearch.query import PropertySearchQuery
 
 @strawberry.type
 
@@ -36,5 +37,5 @@ class Mutation(UserMutation, UserProfileMutation, PropertyMutation, AmenityMutat
 @strawberry.type
 class Query(UserQuery, UserProfile, PropertyQuery, AmenityQuery, LocationQuery,
             CertificationQuery, NotableClientQuery, ImageQuery, OrganizationQuery, OrganizationStaffQuery,
-            InvitationQuery, OrganizationProfileQuery):
+            InvitationQuery, OrganizationProfileQuery, PropertySearchQuery):
     pass
