@@ -24,18 +24,19 @@ from .organizatoinStaff.query import OrganizationStaffQuery
 from .invitation.query import InvitationQuery
 from .invitation.mutation import InvitationMutation
 from .organizationProfile.query import OrganizationProfileQuery
-
+from .propertyReels.mutation import ReelMutation
+from .propertyReels.query import ReelQuery
 from src.graphql.propertySearch.query import PropertySearchQuery
 
 @strawberry.type
 
 class Mutation(UserMutation, UserProfileMutation, PropertyMutation, AmenityMutation,ImageMutation,
                CertificationMutation, NotableClientMutation, OrganizationMutation, OrganizationProfileMutation,
-               OrganizationStaffMutation, InvitationMutation):
+               OrganizationStaffMutation, InvitationMutation, ReelMutation):
     pass
 
 @strawberry.type
 class Query(UserQuery, UserProfile, PropertyQuery, AmenityQuery, LocationQuery,
             CertificationQuery, NotableClientQuery, ImageQuery, OrganizationQuery, OrganizationStaffQuery,
-            InvitationQuery, OrganizationProfileQuery, PropertySearchQuery):
+            InvitationQuery, OrganizationProfileQuery, PropertySearchQuery, ReelQuery):
     pass
