@@ -31,7 +31,6 @@ class PaymentRepository:
                     for key, value in payment_data.items():
                         if value and hasattr(payment, key):
                             setattr(payment, key, value)
-                    payment.updated_at = datetime.now()
                     session.add(payment)
                     await session.commit()
                     await session.refresh(payment)
