@@ -17,7 +17,6 @@ class PropertySearchService:
         Returns:
             List[PropertyType]: The properties that match the filters
         """
-
         try:
             properties = await self.repository.search_properties(search_input)
             return [PropertyType(
@@ -45,3 +44,6 @@ class PropertySearchService:
         except Exception as e:
             print(f"An error occurred while searching for properties: {e}")
             return []
+        
+        
+        
