@@ -247,4 +247,13 @@ class PropertyService:
         """
         return await self.repository.list_properties() 
     
-    
+    async def change_user_status(self, property_id: str, property_data: dict) -> Property:
+        try:
+            property = await self.repository.get_property(property_id)
+            for key, value in property_data.items():
+                if value and hasattr(property, key):
+                    setattr(property, key, value)
+            await self.repository.update_property(property)
+            return property
+        except Exception as e:  
+            raise Exception(f"Error updating property: {e}")
