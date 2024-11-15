@@ -14,6 +14,7 @@ from src.models.Reel import Reel
 from src.models.Course import Course
 from .Base import Base
 from .Property import Property
+from .Availability import Availability
 
 class User(Base):
     __tablename__ = "users"
@@ -27,6 +28,7 @@ class User(Base):
     account_status = Column(Enum(AccountStatus), default=AccountStatus.INACTIVE)
     last_login = Column(DateTime(timezone=True), server_default=func.now())
 
+    availability = relationship("Availability", backref="users", cascade="all, delete, delete-orphan")
     user_profile = relationship("UserProfile", backref="users", cascade="all, delete, delete-orphan")
     two_factor_auth = relationship("TwoFactorAuth", backref="users", cascade="all, delete, delete-orphan")
     notification = relationship("Notification", backref="users", cascade="all, delete, delete-orphan")

@@ -12,31 +12,50 @@ from src.graphql.amenity.query import AmenityQuery
 from src.graphql.image.mutation import ImageMutation
 from src.graphql.image.query import ImageQuery
 from .location.query import LocationQuery
-from .certification.mutation import CertificationMutation
-from .certification.query import CertificationQuery
-from .notableclient.query import NotableClientQuery
-from .notableclient.mutation import NotableClientMutation
-from .organization.query import OrganizationQuery
-from .organization.mutation import OrganizationMutation
-from .organizationProfile.mutation import OrganizationProfileMutation
-from .organizatoinStaff.mutation import OrganizationStaffMutation
-from .organizatoinStaff.query import OrganizationStaffQuery
-from .invitation.query import InvitationQuery
-from .invitation.mutation import InvitationMutation
-from .organizationProfile.query import OrganizationProfileQuery
-from .propertyReels.mutation import ReelMutation
-from .propertyReels.query import ReelQuery
+from src.graphql.courseContent.mutation import CourseContentMutation
+from src.graphql.courseContent.query import ContentQuery
+from src.graphql.course.mutation import CourseMutation
+from src.graphql.course.query import CourseQuery
+from src.graphql.courseCategory.mutation import CourseCategoryMutation
+from src.graphql.courseCategory.query import CourseCategoryQuery
 from src.graphql.propertySearch.query import PropertySearchQuery
+from src.graphql.certification.mutation import CertificationMutation
+from src.graphql.certification.query import CertificationQuery
+from src.graphql.notableclient.query import NotableClientQuery
+from src.graphql.notableclient.mutation import NotableClientMutation
+from src.graphql.organization.query import OrganizationQuery
+from src.graphql.organization.mutation import OrganizationMutation
+from src.graphql.organizationProfile.mutation import OrganizationProfileMutation
+from src.graphql.organizatoinStaff.mutation import OrganizationStaffMutation
+from src.graphql.organizatoinStaff.query import OrganizationStaffQuery
+from src.graphql.invitation.query import InvitationQuery
+from src.graphql.invitation.mutation import InvitationMutation
+from src.graphql.organizationProfile.query import OrganizationProfileQuery
+from src.graphql.propertyReels.mutation import ReelMutation
+from src.graphql.propertyReels.query import ReelQuery
+from src.graphql.propertySearch.query import PropertySearchQuery
+from src.graphql.transaction.query import TransactionQuery
+from src.graphql.transaction.mutation import TransactionMutation
+from src.graphql.message.query import MessageQuery
+from src.graphql.message.mutation import MessageMutation
+from src.graphql.payment.query import PaymentQuery
+from src.graphql.payment.mutation import PaymentMutation
+from src.graphql.availability.query import AvailabilityQuery
+from src.graphql.availability.mutation import AvailabilityMutation
+from src.graphql.bookingPlan.mutation import BookingPlanMutation
+from src.graphql.bookingPlan.query import BookingPlanQuery
 
 @strawberry.type
 
 class Mutation(UserMutation, UserProfileMutation, PropertyMutation, AmenityMutation,ImageMutation,
                CertificationMutation, NotableClientMutation, OrganizationMutation, OrganizationProfileMutation,
-               OrganizationStaffMutation, InvitationMutation, ReelMutation):
+               OrganizationStaffMutation, InvitationMutation, ReelMutation, CourseContentMutation, CourseMutation, CourseCategoryMutation,
+               PaymentMutation, TransactionMutation, MessageMutation, AvailabilityMutation, BookingPlanMutation):
     pass
 
 @strawberry.type
 class Query(UserQuery, UserProfile, PropertyQuery, AmenityQuery, LocationQuery,
             CertificationQuery, NotableClientQuery, ImageQuery, OrganizationQuery, OrganizationStaffQuery,
-            InvitationQuery, OrganizationProfileQuery, PropertySearchQuery, ReelQuery):
+            InvitationQuery, OrganizationProfileQuery, PropertySearchQuery, ReelQuery,  ContentQuery, CourseQuery, CourseCategoryQuery, 
+            PaymentQuery, TransactionQuery, MessageQuery, AvailabilityQuery, BookingPlanQuery):
     pass
