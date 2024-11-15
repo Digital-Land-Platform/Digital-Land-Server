@@ -7,7 +7,6 @@ import uuid
 class Certification(Base):
     __tablename__ = "certifications"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     certification_name = Column(String, nullable=False)
     issued_by = Column(String)
     certificate_url = Column(String)

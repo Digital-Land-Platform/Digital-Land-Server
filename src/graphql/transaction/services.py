@@ -42,6 +42,8 @@ class TransactionService:
                 new_transaction["status"] = getattr(TransactionStatus, status_type, None)
                 if new_transaction["status"] is None:
                     raise ValueError(f"Invalid status: {status_type}")
+            else:
+                new_transaction["status"] = TransactionStatus.PENDING
             property = await self.property_service.get_property(new_transaction["property_id"])
             if not property:
                 raise Exception("Property not found")

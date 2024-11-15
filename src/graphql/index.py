@@ -34,16 +34,24 @@ from src.graphql.organizationProfile.query import OrganizationProfileQuery
 from src.graphql.propertyReels.mutation import ReelMutation
 from src.graphql.propertyReels.query import ReelQuery
 from src.graphql.propertySearch.query import PropertySearchQuery
+from src.graphql.transaction.query import TransactionQuery
+from src.graphql.transaction.mutation import TransactionMutation
+from src.graphql.message.query import MessageQuery
+from src.graphql.message.mutation import MessageMutation
+from src.graphql.payment.query import PaymentQuery
+from src.graphql.payment.mutation import PaymentMutation
 
 @strawberry.type
 
 class Mutation(UserMutation, UserProfileMutation, PropertyMutation, AmenityMutation,ImageMutation,
                CertificationMutation, NotableClientMutation, OrganizationMutation, OrganizationProfileMutation,
-               OrganizationStaffMutation, InvitationMutation, ReelMutation, CourseContentMutation, CourseMutation, CourseCategoryMutation):
+               OrganizationStaffMutation, InvitationMutation, ReelMutation, CourseContentMutation, CourseMutation, CourseCategoryMutation,
+               PaymentMutation, TransactionMutation, MessageMutation):
     pass
 
 @strawberry.type
 class Query(UserQuery, UserProfile, PropertyQuery, AmenityQuery, LocationQuery,
             CertificationQuery, NotableClientQuery, ImageQuery, OrganizationQuery, OrganizationStaffQuery,
-            InvitationQuery, OrganizationProfileQuery, PropertySearchQuery, ReelQuery,  ContentQuery, CourseQuery, CourseCategoryQuery):
+            InvitationQuery, OrganizationProfileQuery, PropertySearchQuery, ReelQuery,  ContentQuery, CourseQuery, CourseCategoryQuery, 
+            PaymentQuery, TransactionQuery, MessageQuery):
     pass
