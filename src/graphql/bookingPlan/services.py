@@ -44,6 +44,7 @@ class BookingPlanService:
                                                                       booking_plan_data.get("transaction_id"),
                                                                         booking_plan_data.get("start_time"),
                                                                         booking_plan_data.get("end_time"))
+
             if check is not None and len(check) > 0:
                 raise Exception("You already provide for this time")
             new_booking_plan = BookingPlan(**booking_plan_data)
