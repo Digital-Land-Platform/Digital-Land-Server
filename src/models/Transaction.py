@@ -5,6 +5,7 @@ from .enums.TransactionType import TransactionType
 from .enums.TransactionStatus import TransactionStatus
 from src.models.Payment import Payment
 from src.models.Message import Message
+from src.models.BookingPlan import BookingPlan
 from .Base import Base
 import uuid
 
@@ -25,3 +26,4 @@ class Transaction(Base):
     
     payment = relationship("Payment", uselist=False, backref="transactions", cascade="all, delete, delete-orphan")
     massage = relationship("Message", backref="transactions", cascade="all, delete, delete-orphan")
+    booking_plan = relationship("BookingPlan", backref="transactions", cascade="all, delete, delete-orphan")
