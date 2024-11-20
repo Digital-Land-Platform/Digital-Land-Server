@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from enum import Enum
+import random
 from src.models.repository.TransactionRepository import TransactionRepository
 from src.models.Transaction import Transaction
 from src.models.enums.TransactionType import TransactionType
@@ -58,28 +59,35 @@ class TransactionService:
             seller_location_id = await self.user_profile_service.get_user_profile_by_user_id(seller.id)
             seller_location = await self.location_service.get_location_by_id(seller_location_id.location_id)
             property_location = await self.location_service.get_location_by_id(property.location_id)
+            eligible_notaries = []
             for user in users:
                 notary_profile = await self.user_profile_service.get_user_profile_by_user_id(str(user.id))
                 notary_location = await self.location_service.get_location_by_id(notary_profile.location_id)
                 if user.role == UserRole.NOTARY and notary_location.province\
-                      == property_location.province == seller_location.province:
-                    new_transaction["notary_id"] = user.id
+                        == property_location.province == seller_location.province:
+                    eligible_notaries.append(user.id)
+            if len(eligible_notaries) > 0:
+                new_transaction["notary_id"] = random.choice(eligible_notaries)
             new_transaction["transaction_number"] = await Utility.generate_transaction_number()
             new_transaction["amount"] = property.price
             new_transaction["transaction_date"] = datetime.now()
             new_transaction["payment_due_date"] = datetime.now() + timedelta(days=2)
             message = None
             if new_transaction.get("message"):
-                message = {
-                    "content": new_transaction.pop("message"),
-                }            
-            transaction = await self.transaction_repo.create_transaction(Transaction(**new_transaction))
-            message["sender_id"] = transaction.buyer_id
-            message["receiver_id"] = transaction.seller_id
-            message["transaction_id"] = transaction.id
-            message["property_id"] = transaction.property_id
-            message["sent_at"] = datetime.now()
-            await self.message_service.create_message(message)
+                if new_transaction.get("message"):
+                    message = {
+                        "content": new_transaction.pop("message"),
+                    }
+                transaction = await self.transaction_repo.create_transaction(Transaction(**new_transaction))
+                message["sender_id"] = transaction.buyer_id
+                message["receiver_id"] = transaction.seller_id
+                message["transaction_id"] = transaction.id
+                message["property_id"] = transaction.property_id
+                message["sent_at"] = datetime.now()
+                await self.message_service.create_message(message)            
+            else:
+                new_transaction.pop("message")
+                transaction = await self.transaction_repo.create_transaction(Transaction(**new_transaction))
             return transaction
         except Exception as e:
             raise Exception(f"Error creating transaction: {e}")
@@ -111,12 +119,15 @@ class TransactionService:
                 seller_location_id = await self.user_profile_service.get_user_profile_by_user_id(seller.id)
                 seller_location = await self.location_service.get_location_by_id(seller_location_id.location_id)
                 property_location = await self.location_service.get_location_by_id(property.location_id)
+                eligible_notaries = []
                 for user in users:
                     notary_profile = await self.user_profile_service.get_user_profile_by_user_id(str(user.id))
                     notary_location = await self.location_service.get_location_by_id(notary_profile.location_id)
                     if user.role == UserRole.NOTARY and notary_location.province\
                         == property_location.province == seller_location.province:
-                        transaction_data["notary_id"] = user.id
+                        eligible_notaries.append(user.id)
+                if len(eligible_notaries) > 0:
+                    transaction_data["notary_id"] = random.choice(eligible_notaries)
                 transaction_data["amount"] = property.price
             transaction = await self.transaction_repo.update_transaction(transaction_id, transaction_data)
             message = None

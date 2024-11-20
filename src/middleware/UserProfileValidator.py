@@ -58,11 +58,17 @@ class UserProfileValidator:
         return identity_card_number
     
     @staticmethod
-    def change_str_date(date_str: str, value: str) -> date:
+    def change_str_date(date_str: str, value: str=None) -> date:
         try:
-            return datetime.strptime(date_str, "%Y-%m-%d").date()
+            return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
         except ValueError:
-            raise ValueError(f"Invalid date format for {value}. Use YYYY-MM-DD.")
+            try:
+                return datetime.strptime(date_str, "%Y-%m-%d").date()
+            except ValueError:
+                raise ValueError(f"Invalid date format {value}. Use YYYY-MM-DD or YYYY-MM-DD H:M:S.")
+        except Exception as e:
+            raise ValueError(f"Invalid date format {value}. {e}")
+        
 
     @staticmethod
     def validate_phone_number(phone_number: str) -> str:

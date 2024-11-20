@@ -40,18 +40,22 @@ from src.graphql.message.query import MessageQuery
 from src.graphql.message.mutation import MessageMutation
 from src.graphql.payment.query import PaymentQuery
 from src.graphql.payment.mutation import PaymentMutation
+from src.graphql.availability.query import AvailabilityQuery
+from src.graphql.availability.mutation import AvailabilityMutation
+from src.graphql.bookingPlan.mutation import BookingPlanMutation
+from src.graphql.bookingPlan.query import BookingPlanQuery
 
 @strawberry.type
 
 class Mutation(UserMutation, UserProfileMutation, PropertyMutation, AmenityMutation,ImageMutation,
                CertificationMutation, NotableClientMutation, OrganizationMutation, OrganizationProfileMutation,
                OrganizationStaffMutation, InvitationMutation, ReelMutation, CourseContentMutation, CourseMutation, CourseCategoryMutation,
-               PaymentMutation, TransactionMutation, MessageMutation):
+               PaymentMutation, TransactionMutation, MessageMutation, AvailabilityMutation, BookingPlanMutation):
     pass
 
 @strawberry.type
 class Query(UserQuery, UserProfile, PropertyQuery, AmenityQuery, LocationQuery,
             CertificationQuery, NotableClientQuery, ImageQuery, OrganizationQuery, OrganizationStaffQuery,
             InvitationQuery, OrganizationProfileQuery, PropertySearchQuery, ReelQuery,  ContentQuery, CourseQuery, CourseCategoryQuery, 
-            PaymentQuery, TransactionQuery, MessageQuery):
+            PaymentQuery, TransactionQuery, MessageQuery, AvailabilityQuery, BookingPlanQuery):
     pass
