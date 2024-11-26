@@ -94,6 +94,9 @@ class PropertyService:
                 if image_input.file:
                     image_input = ImageInput(file=image_input.file)
                     await self.image_service.create_image(image_input, new_property.id)
+                elif image_input.url:
+                    image_input = ImageInput(url=image_input.url)
+                    await self.image_service.create_image(image_input, new_property.id)
                     
         if property_input.amenity_ids:
             amenities = await self.amenity_repository.get_amenities_by_ids(property_input.amenity_ids)
