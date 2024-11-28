@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 import os
 from config.database import DatabaseSession
+from src.seeders.organization_seeder import OrganizationSeeder
 
 db = DatabaseSession()
-
+Organizations = OrganizationSeeder(db)
 
 def startDBConnection(apps: FastAPI):
     if os.getenv("TESTING", "false") == "true":
@@ -16,6 +17,7 @@ def startDBConnection(apps: FastAPI):
             print("==================================================>")
             print("Database connected successfully")
             print("==================================================>")
+            await Organizations.seed_organizations_from_json()
         except Exception as e:
             print("==================================================>")
             print(f"Failed to connect to database: {str(e)}")
