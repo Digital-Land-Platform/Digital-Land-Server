@@ -23,3 +23,12 @@ class LocationQuery:
             return [LocationType.from_model(location) for location in locations]
         except Exception as e:
             raise strawberry.exceptions.GraphQLError(f"Failed to get Locations: {e}")
+    @strawberry.field
+    async def get_locations_by_country_province_sector(
+        self, country: str, province: str, sector: str
+    ) -> list[LocationType]:
+        try:
+            locations = await location_service.get_locations_by_country_province_sector(country, province, sector)
+            return [LocationType.from_model(location) for location in locations]
+        except Exception as e:
+            raise strawberry.exceptions.GraphQLError(f"Failed to get Locations: {e}")

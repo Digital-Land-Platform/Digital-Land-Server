@@ -34,4 +34,19 @@ class LocationService:
         except Exception as e:
             raise Exception(f"Failed to fetch all locations: {e}")
 
+    async def get_locations_by_country_province_sector(self, country: str, province: str, sector: str) -> list[Location]:
+        """
+        Retrieve locations by province and country.
+
+        Args:
+            province (str): The province of the location.
+            country (str): The country of the location.
+
+        Returns:
+            list[Location]: A list of locations matching the criteria.
+        """
+        try:
+            return await self.location_repo.get_locations_by_country_province_sector(country, province, sector)
+        except Exception as e:
+            raise Exception(f"Failed to fetch locations by province and country: {e}")
     
