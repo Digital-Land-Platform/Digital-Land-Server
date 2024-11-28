@@ -1,0 +1,234 @@
+[
+    {
+        "name": "Nyungwe Wildlife Conservation",
+        "TIN": "100000007",
+        "issue_date": "2008-06-15",
+        "expiration_date": "2028-06-15",
+        "is_verified": true,
+        "verification_date": "2008-07-01",
+        "profile": {
+            "mission_statement": "Protecting Nyungwe National Park's biodiversity for future generations.",
+            "vision": "A thriving ecosystem in Nyungwe, preserved for wildlife and humans alike.",
+            "values": "Conservation, Education, Sustainability",
+            "description": "A conservation organization dedicated to protecting Rwanda's rich biodiversity.",
+            "industry": "Conservation",
+            "year_founded": 2008,
+            "headquarters": "Nyamasheke",
+            "num_employees": 45,
+            "annual_revenue": 1200000.00,
+            "website_url": "https://www.nyungwewildlife.rw",
+            "logo_url": "https://example.com/logos/nyungwe_wildlife.png"
+        }
+    },
+    {
+        "name": "Rwanda Clean Energy Solutions",
+        "TIN": "100000008",
+        "issue_date": "2016-02-20",
+        "expiration_date": "2026-02-20",
+        "is_verified": true,
+        "verification_date": "2016-03-01",
+        "profile": {
+            "mission_statement": "Delivering affordable and sustainable energy solutions across Rwanda.",
+            "vision": "To lead Rwanda in achieving energy self-sufficiency through renewables.",
+            "values": "Sustainability, Innovation, Empowerment",
+            "description": "A company focusing on clean energy projects like solar and wind power.",
+            "industry": "Energy",
+            "year_founded": 2016,
+            "headquarters": "Kigali",
+            "num_employees": 100,
+            "annual_revenue": 5000000.00,
+            "website_url": "https://www.rwandacleanenergy.rw",
+            "logo_url": "https://example.com/logos/rwanda_clean_energy.png"
+        }
+    },
+    {
+        "name": "Made in Rwanda Artisans",
+        "TIN": "100000009",
+        "issue_date": "2014-09-10",
+        "expiration_date": "2024-09-10",
+        "is_verified": false,
+        "verification_date": "2010-05-10",
+        "profile": {
+            "mission_statement": "Promoting Rwandan culture through handmade crafts and art.",
+            "vision": "To make 'Made in Rwanda' a globally recognized brand.",
+            "values": "Creativity, Heritage, Community",
+            "description": "An artisan cooperative creating handcrafted goods for local and international markets.",
+            "industry": "Arts & Crafts",
+            "year_founded": 2014,
+            "headquarters": "Kigali",
+            "num_employees": 30,
+            "annual_revenue": 750000.00,
+            "website_url": "https://www.madeinrwandaartisans.rw",
+            "logo_url": "https://example.com/logos/made_in_rwanda_artisans.png"
+        }
+    },
+    {
+        "name": "Rwanda Tourism Board",
+        "TIN": "100000010",
+        "issue_date": "2005-12-01",
+        "expiration_date": "2030-12-01",
+        "is_verified": true,
+        "verification_date": "2006-01-10",
+        "profile": {
+            "mission_statement": "Positioning Rwanda as a premier travel destination globally.",
+            "vision": "To make Rwanda a top destination for eco-tourism by 2030.",
+            "values": "Excellence, Hospitality, Sustainability",
+            "description": "The official tourism board of Rwanda, promoting the country's attractions worldwide.",
+            "industry": "Tourism",
+            "year_founded": 2005,
+            "headquarters": "Kigali",
+            "num_employees": 200,
+            "annual_revenue": 10000000.00,
+            "website_url": "https://www.rwandatourism.rw",
+            "logo_url": "https://example.com/logos/rwanda_tourism_board.png"
+        }
+    },
+    {
+        "name": "Akagera Agriculture Co-op",
+        "TIN": "100000011",
+        "issue_date": "2013-08-25",
+        "expiration_date": "2023-08-25",
+        "is_verified": false,
+        "verification_date": "2010-01-13",
+        "profile": {
+            "mission_statement": "Empowering local farmers through sustainable agricultural practices.",
+            "vision": "A Rwanda where every farmer thrives.",
+            "values": "Empowerment, Sustainability, Growth",
+            "description": "A cooperative uniting smallholder farmers in the Akagera region.",
+            "industry": "Agriculture",
+            "year_founded": 2013,
+            "headquarters": "Rwamagana",
+            "num_employees": 400,
+            "annual_revenue": 4000000.00,
+            "website_url": "https://www.akageracoop.rw",
+            "logo_url": "https://example.com/logos/akagera_agriculture.png"
+        }
+    },
+    {
+        "name": "Rwanda Tech Hub",
+        "TIN": "100000001",
+        "issue_date": "2015-05-20",
+        "expiration_date": "2025-05-20",
+        "is_verified": true,
+        "verification_date": "2015-06-01",
+        "profile": {
+            "mission_statement": "Empowering Rwanda's tech startups to thrive in the global market.",
+            "vision": "A Rwanda where technology drives socio-economic growth.",
+            "values": "Innovation, Integrity, Community",
+            "description": "A tech incubator providing support to Rwanda's growing tech ecosystem.",
+            "industry": "Technology",
+            "year_founded": 2015,
+            "headquarters": "Kigali",
+            "num_employees": 150,
+            "annual_revenue": 1500000.00,
+            "website_url": "https://www.rwandatechhub.rw",
+            "logo_url": "https://example.com/logos/rwanda_tech_hub.png"
+        }
+    },
+    {
+        "name": "Green Agri Farms",
+        "TIN": "100000002",
+        "issue_date": "2012-04-10",
+        "expiration_date": "2022-04-10",
+        "is_verified": true,
+        "verification_date": "2012-04-15",
+        "profile": {
+            "mission_statement": "Promoting sustainable agriculture for a greener Rwanda.",
+            "vision": "To lead Rwanda's agricultural revolution through innovation.",
+            "values": "Sustainability, Excellence, Transparency",
+            "description": "A leading agricultural company specializing in organic farming.",
+            "industry": "Agriculture",
+            "year_founded": 2012,
+            "headquarters": "Musanze",
+            "num_employees": 250,
+            "annual_revenue": 3200000.00,
+            "website_url": "https://www.greenagrifarms.rw",
+            "logo_url": "https://example.com/logos/green_agri_farms.png"
+        }
+    },
+    {
+        "name": "Vision Builders Ltd.",
+        "TIN": "100000003",
+        "issue_date": "2018-07-15",
+        "expiration_date": "2028-07-15",
+        "is_verified": false,
+        "verification_date": "2010-11-10",
+        "profile": {
+            "mission_statement": "Building a better Rwanda through quality infrastructure.",
+            "vision": "To be the most trusted construction company in East Africa.",
+            "values": "Quality, Safety, Innovation",
+            "description": "A construction company focusing on eco-friendly infrastructure projects.",
+            "industry": "Construction",
+            "year_founded": 2018,
+            "headquarters": "Kigali",
+            "num_employees": 120,
+            "annual_revenue": 8500000.00,
+            "website_url": "https://www.visionbuilders.rw",
+            "logo_url": "https://example.com/logos/vision_builders.png"
+        }
+    },
+    {
+        "name": "Rwanda Health Initiative",
+        "TIN": "100000004",
+        "issue_date": "2010-11-05",
+        "expiration_date": "2020-11-05",
+        "is_verified": true,
+        "verification_date": "2010-11-10",
+        "profile": {
+            "mission_statement": "Improving access to healthcare for all Rwandans.",
+            "vision": "Universal healthcare accessibility in Rwanda by 2030.",
+            "values": "Compassion, Accessibility, Excellence",
+            "description": "A non-profit organization improving health outcomes across Rwanda.",
+            "industry": "Healthcare",
+            "year_founded": 2010,
+            "headquarters": "Huye",
+            "num_employees": 80,
+            "annual_revenue": 500000.00,
+            "website_url": "https://www.rwandahealthinitiative.rw",
+            "logo_url": "https://example.com/logos/rwanda_health_initiative.png"
+        }
+    },
+    {
+        "name": "Kigali Innovations Lab",
+        "TIN": "100000005",
+        "issue_date": "2019-01-30",
+        "expiration_date": "2029-01-30",
+        "is_verified": false,
+        "verification_date": "2010-11-10",
+        "profile": {
+            "mission_statement": "Fostering innovation for a smarter Rwanda.",
+            "vision": "To make Kigali a hub for technological advancements in Africa.",
+            "values": "Creativity, Collaboration, Excellence",
+            "description": "An innovation lab working on cutting-edge tech solutions.",
+            "industry": "Technology",
+            "year_founded": 2019,
+            "headquarters": "Kigali",
+            "num_employees": 50,
+            "annual_revenue": 2000000.00,
+            "website_url": "https://www.kigaliinnovations.rw",
+            "logo_url": "https://example.com/logos/kigali_innovations.png"
+        }
+    },
+    {
+        "name": "Rwanda Coffee Exporters",
+        "TIN": "100000006",
+        "issue_date": "2011-03-12",
+        "expiration_date": "2026-03-12",
+        "is_verified": true,
+        "verification_date": "2011-04-01",
+        "profile": {
+            "mission_statement": "Connecting Rwanda's finest coffee to the world.",
+            "vision": "To be the leading exporter of specialty coffee in Africa.",
+            "values": "Quality, Sustainability, Growth",
+            "description": "A coffee export company partnering with local farmers.",
+            "industry": "Agriculture",
+            "year_founded": 2011,
+            "headquarters": "Gisenyi",
+            "num_employees": 60,
+            "annual_revenue": 3500000.00,
+            "website_url": "https://www.rwandacoffee.rw",
+            "logo_url": "https://example.com/logos/rwanda_coffee_exporters.png"
+        }
+    }
+    
+]
