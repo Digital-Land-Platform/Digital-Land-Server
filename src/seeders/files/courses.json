@@ -1,0 +1,19 @@
+[
+    {
+      "title": "Introduction to Real Estate",
+      "description": "Learn the basics of real estate investment.",
+      "category_id": "b6c8fa48-3b4d-4a92-983a-62c1f2345678",
+      "status": "PUBLISHED",
+      "target_audience": "Beginners in real estate",
+      "created_by": "def368c9-8f19-4b25-90da-2419d7148fb6"
+    },
+    {
+      "title": "Advanced Property Management",
+      "description": "In-depth techniques for managing properties.",
+      "category_id": "c7d9eb59-4b6e-5a73-1234-72e2g5678901",
+      "status": "DRAFT",
+      "target_audience": "Experienced property managers",
+      "created_by": "def368c9-8f19-4b25-90da-2419d7148fb6"
+    }
+  ]
+  
