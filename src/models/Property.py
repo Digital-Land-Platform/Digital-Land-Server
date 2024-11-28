@@ -7,6 +7,7 @@ from sqlalchemy.orm import relationship, validates
 from src.models.Base import Base, BaseModel
 from src.models.Reel import Reel
 from src.models.enums.PropertyStatus import PropertyStatus
+from src.models.PropertyCatagoryRelation import PropertyCatagoryRelation
 
 
 class Property(Base):
@@ -44,7 +45,8 @@ class Property(Base):
     message = relationship("Message", backref="properties", cascade="all, delete, delete-orphan")
     reels = relationship("Reel", backref="properties", cascade="all, delete, delete-orphan")
     images = relationship("Image", backref="properties", cascade="all, delete-orphan", lazy="joined")
-    
+    property_catagories = relationship("PropertyCatagoryRelation", backref="properties")
+
     @validates('price')
     def validate_price(self, key, value):
         if value <= 0:
