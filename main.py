@@ -13,6 +13,7 @@ from src.startups.dbConn import startDBConnection
 def init_app():
     app = FastAPI()
     startDBConnection(app)
+
     @app.get("/")
     def read_root():
         return {"Hello": "World"}
