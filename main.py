@@ -1,5 +1,6 @@
 # main.py
-
+import os
+from config.config import Config
 from src.RestAPI.Auth import login, token
 import strawberry
 import uvicorn
@@ -36,7 +37,8 @@ def init_app():
 
 app = init_app()
 
+PORT = Config.get_env_variable("PORT")
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=PORT)

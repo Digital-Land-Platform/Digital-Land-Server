@@ -42,3 +42,4 @@ sqlmodel==0.0.21
 strawberry-graphql==0.243.0
 uvicorn==0.32.0
 cryptography==43.0.3
+psycopg2-binary>=2.9,<3.0
