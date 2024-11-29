@@ -44,18 +44,24 @@ from src.graphql.availability.query import AvailabilityQuery
 from src.graphql.availability.mutation import AvailabilityMutation
 from src.graphql.bookingPlan.mutation import BookingPlanMutation
 from src.graphql.bookingPlan.query import BookingPlanQuery
+from src.graphql.propertyCatagory.query import PropertyCatagoryQuery
+from src.graphql.propertyCatagory.mutation import PropertyCatagoryMutation
+from src.graphql.propertyCatagoryRelationship.query import PropertyCatagoryRelationshipQuery
+from src.graphql.propertyCatagoryRelationship.mutation import PropertyCatagoryRelationshipMutation
 
 @strawberry.type
 
 class Mutation(UserMutation, UserProfileMutation, PropertyMutation, AmenityMutation,ImageMutation,
                CertificationMutation, NotableClientMutation, OrganizationMutation, OrganizationProfileMutation,
                OrganizationStaffMutation, InvitationMutation, ReelMutation, CourseContentMutation, CourseMutation, CourseCategoryMutation,
-               PaymentMutation, TransactionMutation, MessageMutation, AvailabilityMutation, BookingPlanMutation):
+               PaymentMutation, TransactionMutation, MessageMutation, AvailabilityMutation, BookingPlanMutation,
+               PropertyCatagoryMutation, PropertyCatagoryRelationshipMutation):
     pass
 
 @strawberry.type
 class Query(UserQuery, UserProfile, PropertyQuery, AmenityQuery, LocationQuery,
             CertificationQuery, NotableClientQuery, ImageQuery, OrganizationQuery, OrganizationStaffQuery,
             InvitationQuery, OrganizationProfileQuery, PropertySearchQuery, ReelQuery,  ContentQuery, CourseQuery, CourseCategoryQuery, 
-            PaymentQuery, TransactionQuery, MessageQuery, AvailabilityQuery, BookingPlanQuery):
+            PaymentQuery, TransactionQuery, MessageQuery, AvailabilityQuery, BookingPlanQuery, PropertyCatagoryQuery,
+            PropertyCatagoryRelationshipQuery):
     pass

@@ -48,7 +48,7 @@ print("==================================================>")
 
 class DatabaseSession:
     def __init__(self, url: str = DB_CONFIG):
-        self.engine = create_async_engine(url, echo=True)
+        self.engine = create_async_engine(url, echo=isDev)
         self.SessionLocal = sessionmaker(
             bind=self.engine,
             class_=AsyncSession,
