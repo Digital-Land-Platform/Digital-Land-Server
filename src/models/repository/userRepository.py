@@ -85,3 +85,20 @@ class UserRepository(User):
         except SQLAlchemyError as e:
             await self.db.rollback()
             raise Exception(f"Failed to delete user: {e}")
+        
+    async def delete_all_users(self) -> bool:
+        try:
+            async with self.db as session:
+                statement = select(User)
+                result = await session.execute(statement)
+                users = result.scalars().all()
+                if not users or len(users) == 0:
+                    return False 
+                for user in users:
+                    await session.delete(user)
+                await session.commit()
+                return True
+        except SQLAlchemyError as e:
+            # await self.db.rollback()
+            raise Exception(f"Failed to delete all users: {e}")
+        
