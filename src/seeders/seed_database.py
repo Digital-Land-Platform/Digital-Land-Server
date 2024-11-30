@@ -26,18 +26,25 @@ class Seeder:
         with open(json_file, "r") as file:
             properties_data = json.load(file)
 
-        property_seeder = PropertySeeder(self.db)
-        await property_seeder.seed_properties(properties_data)
+        
         await OrganizationSeeder(self.db).seed_organizations_from_json()
         await UserSeeder(self.db).seed_users_from_json()
+        await PropertySeeder(self.db).seed_properties(properties_data)
+        
         
 
 if __name__ == "__main__":
     import asyncio
     
     async def main():
-        await db.create_all()
-        await Seeder(db).seed()
-        await db.close()
+        try:
+            await db.create_all()
+            await Seeder(db).seed()
+        except Exception as e:
+            print(e)
+            await db.close()
+        finally:
+            await db.close()
+            print("Database connection closed.")
     
     asyncio.run(main())
