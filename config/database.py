@@ -28,7 +28,7 @@ if not DB_CONFIG:
          DB_CONFIG = f"postgresql+asyncpg://{DEV_DB_USER}:{DEV_DB_PASS}@{DEV_DB_HOST}:{DEV_DB_PORT}/{DEV_DB_NAME}"
 
     else:
-        raise ValueError('Database variables are not defined in .env file.')
+        raise ValueError('\033[91mSome or Database variables are not defined in .env file.\033[0m')
 else:
     DB_CONFIG_is_defined = True
     
@@ -48,7 +48,8 @@ print("==================================================>")
 
 class DatabaseSession:
     def __init__(self, url: str = DB_CONFIG):
-        self.engine = create_async_engine(url, echo=isDev)
+        self.engine = create_async_engine(url, echo=False)
+        # self.engine = create_async_engine(url, echo=isDev)
         self.SessionLocal = sessionmaker(
             bind=self.engine,
             class_=AsyncSession,

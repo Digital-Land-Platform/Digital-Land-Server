@@ -14,7 +14,7 @@ class AmenityRepository:
             db (AsyncSession): The database session.
         """
         self.db = db
-    async def create_amenity(self, amenity_data: Amenities) -> Amenities:
+    async def create_amenity(self, amenity: Amenities) -> Amenities:
         """
         Create a new amenity in the database.
 
@@ -24,9 +24,15 @@ class AmenityRepository:
         Returns:
             Amenities: The created amenity object.
         """
-        self.db.add(amenity_data)
-        await self.db.commit()
-        return amenity_data
+        try:
+            async with self.db as session:
+                session.add(amenity)
+                await session.commit()
+                await session.refresh(amenity)
+                return amenity
+        except Exception as e:
+            print(f"Failed to create Amenity {e}")
+            raise Exception(f"Failed to create amenity: {e}")
     
     async def update_amenity(self, amenity: Amenities) -> Amenities:
         """
@@ -40,7 +46,8 @@ class AmenityRepository:
         """
         async with self.db as session:
             session.add(amenity)  
-            await session.commit()  
+            await session.commit() 
+            await session.refresh(amenity) 
             return amenity  
     
     async def get_amenities_by_ids(self, amenity_ids: List[UUID]) -> List[Amenities]:
@@ -121,3 +128,18 @@ class AmenityRepository:
         async with self.db as session:
             result = await session.execute(select(Amenities))
             return result.scalars().all()
+    async def delete_all_amenities(self) -> bool:
+        try:
+            async with self.db as session:
+                statement = select(Amenities)
+                result = await session.execute(statement)
+                amenities = result.scalars().all()
+                if not amenities:
+                    return False
+                for amenity in amenities:
+                    await session.delete(amenity)
+                await session.commit()
+                return True
+        except Exception as e:
+            await self.db.rollback()
+            raise Exception(f"Failed to delete all amenities: {e}")
