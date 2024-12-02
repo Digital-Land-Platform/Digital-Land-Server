@@ -1,0 +1,56 @@
+[
+    {
+        "province": "Kigali City",
+        "district": "Gasabo",
+        "sector": "Kimironko",
+        "cell": "Bibare",
+        "village": "Kabeza",
+        "city": "Kigali",
+        "country": "Rwanda"
+    },
+    {
+        "province": "Kigali City",
+        "district": "Nyarugenge",
+        "sector": "Kiyovu",
+        "cell": "Kiyovu",
+        "village": "Kiyovu",
+        "city": "Kigali",
+        "country": "Rwanda"
+    },
+    {
+        "province": "Southern Province",
+        "district": "Huye",
+        "sector": "Ngoma",
+        "cell": "Ngoma",
+        "village": "Ngoma",
+        "city": "Huye",
+        "country": "Rwanda"
+    },
+    {
+        "province": "Northern Province",
+        "district": "Musanze",
+        "sector": "Muhoza",
+        "cell": "Muhoza",
+        "village": "Muhoza",
+        "city": "Musanze",
+        "country": "Rwanda"
+    },
+    {
+        "province": "Western Province",
+        "district": "Rubavu",
+        "sector": "Gisenyi",
+        "cell": "Gisenyi",
+        "village": "Gisenyi",
+        "city": "Rubavu",
+        "country": "Rwanda"
+    },
+    {
+        "province": "Eastern Province",
+        "district": "Rwamagana",
+        "sector": "Fumbwe",
+        "cell": "Fumbwe",
+        "village": "Fumbwe",
+        "city": "Rwamagana",
+        "country": "Rwanda"
+    }
+]

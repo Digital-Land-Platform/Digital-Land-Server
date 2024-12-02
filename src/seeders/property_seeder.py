@@ -34,6 +34,19 @@ class PropertySeeder:
             users = await self.user_service.get_all_users()
             amenities = await self.amenity_service.list_all_amenities()
 
+            if not locations or len(locations) == 0:
+                print("Properties can not be seeded because there are No locations found.")
+                return
+            
+            if not users or len(users) == 0:
+                print("Properties can not be seeded because there are No users found.")
+                return
+            
+            if not amenities or len(amenities) == 0:
+                print("Properties can not be seeded because there are No amenities found.")
+                print(amenities)
+                return
+
             for property_data in properties_data:
                 property_data["location_id"] = random.choice([loc.id for loc in locations])
                 property_data["user_id"] = random.choice([user.id for user in users])

@@ -1,3 +1,4 @@
+# #!/user/bin/python3  
 import os
 import json
 import asyncio
@@ -8,8 +9,10 @@ sys.path.append(project_root)
 
 from src.seeders.property_seeder import PropertySeeder
 from config.database import db
+from src.seeders.location_seeder import LocationSeeder
 from src.seeders.organization_seeder import OrganizationSeeder
 from src.seeders.user_seeder import UserSeeder
+from src.seeders.amenity_seeder import AmenitySeeder
 from main import app
 
 
@@ -26,9 +29,10 @@ class Seeder:
         with open(json_file, "r") as file:
             properties_data = json.load(file)
 
-        
-        await OrganizationSeeder(self.db).seed_organizations_from_json()
+        await LocationSeeder(self.db).seed_locations_from_json()
         await UserSeeder(self.db).seed_users_from_json()
+        await OrganizationSeeder(self.db).seed_organizations_from_json()
+        await AmenitySeeder(self.db).seed_amenities_from_json()
         await PropertySeeder(self.db).seed_properties(properties_data)
         
         

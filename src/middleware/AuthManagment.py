@@ -28,12 +28,12 @@ from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError, Invalid
 from src.graphql.users.services import UserService
 from src.models.enums.UserRole import UserRole
 from config.database import db
+from config.config import Config
 
-auth_domain = os.getenv("AUTH_DOMAIN", "Test_auth0.com")
-audience = os.getenv("AUDUENCE", "Test_audience.com")
+auth_domain = Config.get_env_variable("AUTH_DOMAIN")
+audience = Config.get_env_variable("AUDUENCE")
 userService = UserService(db.SessionLocal())
 MAX_TOKEN_SIZE = 4096  # A maximum size for JWTs
-
 
 class AuthManagement():
     """
