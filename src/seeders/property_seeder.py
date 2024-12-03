@@ -1,14 +1,21 @@
 import json
+import random
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.graphql.property.services import PropertyService
 from src.models.enums.PropertyStatus import PropertyStatus
 from src.graphql.property.types import PropertyInput
 from src.graphql.image.types import ImageInput
+from src.graphql.users.services import UserService
+from src.graphql.location.service import LocationService
+from src.graphql.amenity.services import AmenityService
 
 class PropertySeeder:
     def __init__(self, db: AsyncSession):
         self.db = db
-        self.property_service = PropertyService(db)
+        self.property_service = PropertyService(self.db.SessionLocal())
+        self.user_service = UserService(self.db)
+        self.location_service = LocationService(self.db)
+        self.amenity_service = AmenityService(self.db.SessionLocal())
 
     async def seed_properties(self, properties_data: list):
         for property_data in properties_data:
@@ -41,6 +48,16 @@ class PropertySeeder:
                 amenity_ids=property_data["amenity_ids"],
                 images=image_inputs
             )
+            locations = await self.location_service.get_all_locations()
+            users = await self.user_service.get_all_users()
+            amenitys = await self.amenity_service.list_all_amenities()
+            for key, value in property_input.items():
+                if key == "user_id":
+                    property_input[key] = random.choice([user.id for user in users])
+                if key == "location_id":
+                    property_input[key] = random.choice([location.id for location in locations])
+                if key == "amenity_ids":
+                    property_input[key] = [random.choices([amenity.id for amenity in amenitys])]
 
             existing_property = await self.property_service.get_existing_property(
                 title=property_input.title,
