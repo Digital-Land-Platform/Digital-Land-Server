@@ -10,7 +10,6 @@ __pycache__/
 *.cfg
 *.h
 
-
 # Configuration Files
 .env
 .env.*

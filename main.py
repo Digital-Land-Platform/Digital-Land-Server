@@ -5,14 +5,31 @@ from src.RestAPI.Auth import login, token
 import strawberry
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from strawberry.fastapi import GraphQLRouter
 from src.middleware.CustomErrorHandler import CustomException, custom_exception_handler
 from src.graphql.index import Query, Mutation
 from src.startups.dbConn import startDBConnection
+from config.logging import setup_logger
 
 def init_app():
     app = FastAPI()
     startDBConnection(app)
+
+    # Get CLIENT_URL from environment variables
+    CLIENT_URL = Config.get_env_variable("CLIENT_URL")
+
+    # Configure CORS
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[CLIENT_URL],  # Allow only the client URL
+        allow_credentials=True,
+        allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
+        allow_headers=["*"],  # Allow all headers
+    )
+
+    # Set up logging
+    setup_logger()
 
     @app.get("/")
     def read_root():
