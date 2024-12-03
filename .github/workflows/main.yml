@@ -29,6 +29,7 @@ env:
   EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
   IMAGE_URL: ${{ secrets.IMAGE_URL }} 
   CLIENT_URL: ${{ secrets.CLIENT_URL }}
+  REDIRECT_URI2: ${{ secrets.REDIRECT_URI2 }}
 
 jobs:
   build:
