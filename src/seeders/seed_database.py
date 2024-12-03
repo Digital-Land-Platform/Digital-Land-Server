@@ -1,4 +1,4 @@
-# #!/user/bin/python3  
+# seed_database.py
 import os
 import json
 import asyncio
@@ -13,8 +13,6 @@ from src.seeders.location_seeder import LocationSeeder
 from src.seeders.organization_seeder import OrganizationSeeder
 from src.seeders.user_seeder import UserSeeder
 from src.seeders.amenity_seeder import AmenitySeeder
-from main import app
-
 
 class Seeder:
     def __init__(self, db):
@@ -34,21 +32,20 @@ class Seeder:
         await OrganizationSeeder(self.db).seed_organizations_from_json()
         await AmenitySeeder(self.db).seed_amenities_from_json()
         await PropertySeeder(self.db).seed_properties(properties_data)
-        
-        
 
-if __name__ == "__main__":
-    import asyncio
-    
-    async def main():
+    async def seed_database(self):
         try:
-            await db.create_all()
-            await Seeder(db).seed()
+            await self.db.create_all()
+            await self.seed()
         except Exception as e:
             print(e)
-            await db.close()
         finally:
-            await db.close()
+            await self.db.close()
             print("Database connection closed.")
+
+if __name__ == "__main__":
+    async def main():
+        seeder = Seeder(db)
+        await seeder.seed_database()
     
     asyncio.run(main())

@@ -11,6 +11,11 @@ from src.middleware.CustomErrorHandler import CustomException, custom_exception_
 from src.graphql.index import Query, Mutation
 from src.startups.dbConn import startDBConnection
 from config.logging import setup_logger
+from src.seeders.seed_database import Seeder
+from config.database import db
+import asyncio
+
+isDev = Config.get_env_variable("ENV_APP") == "dev"
 
 def init_app():
     app = FastAPI()
@@ -50,9 +55,33 @@ def init_app():
 
     app.add_exception_handler(CustomException, custom_exception_handler)
 
+    # seed_database on deployed database
+    if not isDev:
+        @app.on_event("startup")
+        async def startup_event():
+            await seed_database()
+
     return app
 
 app = init_app()
+
+
+async def seed_database():
+    """
+    Seeds the database with initial data when ENV_APP is not dev.
+
+    This function initializes the Seeder class with the database session
+    and calls the seed_database method to populate the database with initial data.
+    It is intended to be run asynchronously.
+
+    Usage:
+        await seed_database()
+    """   
+    seeder = Seeder(db)
+    await seeder.seed_database()
+
+# if not isDev:
+#     asyncio.create_task(seed_database())
 
 PORT = Config.get_env_variable("PORT")
 
