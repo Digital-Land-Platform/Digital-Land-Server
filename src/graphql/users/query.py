@@ -54,7 +54,9 @@ class UserQuery:
     """
 
     @strawberry.field
-    def protected_data(self, info: Info) -> DirectiveValue[str]:
+    @auth_managment.role_required([UserRole.ADMIN, UserRole.USER, UserRole.NOTARY])
+    @auth_managment.isAuth()
+    async def protected_data(self, info: Info) -> DirectiveValue[str]:
         """
         Retrieves protected data for the authenticated user.
 
@@ -72,17 +74,9 @@ class UserQuery:
                             is returned.
         """
         try:
-            authorization_header = info.context["request"].headers.get("authorization")
-            if authorization_header and authorization_header.startswith("Bearer "):
-                token = authorization_header.split("Bearer ")[1]
-            else:
-                raise HTTPException(status_code=400, detail="Failed to create user")
-            auth_managment.validate_token(token)
-            user_info = auth_managment.get_user_info(token)
-            if not user_info.get("email_verified"):
-                raise HTTPException(status_code=400, detail="Failed to create user")
-            
-            return f"Endpoint is protected, can accessed by {user_info.get('given_name')} {user_info.get('email')}"
+            user_id = info.context.get("user_id")
+            email = info.context.get("email")
+            return f"Endpoint is protected, can accessed by {user_id} {email}"
             
         except HTTPException as e:
             raise strawberry.exceptions.GraphQLError(e.detail)

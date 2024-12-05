@@ -200,3 +200,40 @@ class AuthManagement():
                 return await func(*args, **kwargs)
             return wrapper
         return decorator
+    
+    def isAuth(self):
+        """
+        Decorator to authenticate users and attach their email and ID
+        to the GraphQL context (`info` object).
+        """
+        def decorator(func):
+            @wraps(func)
+            async def wrapper(*args, **kwargs):
+                # Extract `info` from `kwargs`
+                info = kwargs.get('info')
+                if not info:
+                    raise HTTPException(status_code=400, detail="GraphQL context missing")
+                
+                authorization_header = info.context["request"].headers.get("authorization")
+                if not authorization_header:
+                    raise HTTPException(status_code=401, detail="Authorization header missing")
+
+                try:
+                    # Validate the token and retrieve user information
+                    token = authorization_header.split("Bearer ")[1]
+                    user_info = self.get_user_info(token)  # Decode/verify token
+                    
+                    # Fetch user details
+                    user = await userService.get_user_by_email(user_info.get("email"))
+
+                    # Attach user info to the `info` context
+                    info.context["user_id"] = user.id
+                    info.context["email"] = user.email
+
+                    # Proceed with the original function
+                    return await func(*args, **kwargs)
+
+                except Exception as e:
+                    raise HTTPException(status_code=401, detail=f"Authentication failed: {str(e)}")
+            return wrapper
+        return decorator
