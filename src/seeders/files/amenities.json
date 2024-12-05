@@ -1,0 +1,18 @@
+[
+    {
+        "title": "Swimming Pool",
+        "icon": "pool_icon.png"
+    },
+    {
+        "title": "Gym",
+        "icon": "gym_icon.png"
+    },
+    {
+        "title": "Parking",
+        "icon": "parking_icon.png"
+    },
+    {
+        "title": "Wi-Fi",
+        "icon": "wifi_icon.png"
+    }
+]

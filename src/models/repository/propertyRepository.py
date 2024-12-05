@@ -128,8 +128,3 @@ class PropertyRepository:
             )
             properties = result.scalars().unique()
             return properties.all() if result else None 
-        
-    
-        
-    
-

@@ -8,7 +8,13 @@ from config.database import db
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import UploadFile, HTTPException
 from strawberry.file_uploads import Upload
+from config.config import Config
 
+cloudinary.config(
+    cloud_name=Config.get_env_variable("CLOUDINARY_NAME"),
+    api_key=Config.get_env_variable("CLOUDINARY_API_KEY"),
+    api_secret=Config.get_env_variable("CLOUDINARY_API_SECRET")
+)
 
 class ImageService:
     def __init__(self, db: AsyncSession):

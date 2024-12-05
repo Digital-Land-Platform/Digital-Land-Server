@@ -6,19 +6,20 @@ from sqlalchemy.orm import sessionmaker
 from config.config import Config
 from src.models.Base import BaseModel
 
-
 load_dotenv()
+
+DB_CONFIG_is_defined = False
 
 DB_CONFIG = Config.get_env_variable("DB_CONFIG")
 
-# Database configuration
-DEV_DB_HOST = Config.get_env_variable("DEV_DB_HOST")
-DEV_DB_PORT = Config.get_env_variable("DEV_DB_PORT")
-DEV_DB_USER = Config.get_env_variable("DEV_DB_USER")
-DEV_DB_PASS = Config.get_env_variable("DEV_DB_PASS")
-DEV_DB_NAME = Config.get_env_variable("DEV_DB_NAME")
+if not DB_CONFIG: 
+    # Database configuration
+    DEV_DB_HOST = Config.get_env_variable("DEV_DB_HOST")
+    DEV_DB_PORT = Config.get_env_variable("DEV_DB_PORT")
+    DEV_DB_USER = Config.get_env_variable("DEV_DB_USER")
+    DEV_DB_PASS = Config.get_env_variable("DEV_DB_PASS")
+    DEV_DB_NAME = Config.get_env_variable("DEV_DB_NAME")
 
-if not DB_CONFIG:
     if DEV_DB_HOST \
             and DEV_DB_PORT \
                 and DEV_DB_USER \
@@ -27,17 +28,28 @@ if not DB_CONFIG:
          DB_CONFIG = f"postgresql+asyncpg://{DEV_DB_USER}:{DEV_DB_PASS}@{DEV_DB_HOST}:{DEV_DB_PORT}/{DEV_DB_NAME}"
 
     else:
-        raise ValueError('Database variables are not defined in .env file.')
+        raise ValueError('\033[91mSome or Database variables are not defined in .env file.\033[0m')
+else:
+    DB_CONFIG_is_defined = True
+    
+isDev = Config.get_env_variable("ENV_APP") == "dev"
 
 print("==================================================>")
 print("Initializing database...")
 print("==================================================>")
-print(f"DB_CONFIG: {DB_CONFIG}")
+if isDev:
+    print(f"DB_CONFIG: {DB_CONFIG}")
+else:
+    if DB_CONFIG_is_defined:
+        print(f"DB_CONFIG: Has been provided!")
+    else:
+        print(f"DB_CONFIG: Hasn't been provided!")
 print("==================================================>")
 
 class DatabaseSession:
     def __init__(self, url: str = DB_CONFIG):
-        self.engine = create_async_engine(url, echo=True)
+        self.engine = create_async_engine(url, echo=False)
+        # self.engine = create_async_engine(url, echo=isDev)
         self.SessionLocal = sessionmaker(
             bind=self.engine,
             class_=AsyncSession,

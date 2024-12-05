@@ -24,15 +24,26 @@ class UserSeeder:
         self.profile_repo = UserProfileRepository(self.db)
         self.location_repo = LocationRepository(self.db)
 
-    async def seed_users_from_json(self):
-        current_dir = os.path.dirname(__file__)
+    async def delete_all_users(self):
+        await self.user_repo.delete_all_users()
 
+
+    async def seed_users_from_json(self):
+        await self.delete_all_users()  # Delete all users before seeding
+
+        current_dir = os.path.dirname(__file__)
         file_path = os.path.join(current_dir, "files", "users.json")
 
         with open(file_path, "r") as file:
             users = json.load(file)
+
         locations = await self.location_repo.get_all_locations()
         location_list = [value.id for value in locations]
+
+        if not location_list or len(location_list) == 0:
+            print(f"Location list is empty {location_list}")
+            raise Exception("No locations found in the database. Please add locations before seeding users.")
+    
         for user in users:
             profile = user.pop("profile")
             user["role"] = UserRole[user["role"].upper()]

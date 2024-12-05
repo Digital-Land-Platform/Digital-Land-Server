@@ -12,5 +12,11 @@ class Config:
         """Get an environment variable or raise an error if not defined."""
         value = os.getenv(var_name)
         if value is None:
-            raise RuntimeError(f"The environment variable '{var_name}' is not set")
+            if var_name == "DB_CONFIG":
+                print("\033[91mDB_CONFIG variable not defined\033[0m")
+                return None
+            if var_name == "ENV_APP":
+                print("\033[91mENV_APP variable not defined\033[0m")
+                return None
+            raise RuntimeError(f"\033[91mThe environment variable '{var_name}' is not set\033[0m")
         return value
