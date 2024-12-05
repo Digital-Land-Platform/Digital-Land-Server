@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 from enum import Enum
 import random
 from src.models.repository.TransactionRepository import TransactionRepository
+from src.models.TransactionHistory import TransactionHistory
+from src.models.repository.TransactionHistoryRepository import TransactionHistoryRepository
 from src.models.Transaction import Transaction
 from src.models.enums.TransactionType import TransactionType
 from src.models.enums.TransactionStatus import TransactionStatus
@@ -29,6 +31,7 @@ class TransactionService:
         self.user_profile_service = UserProfileService(self.db)
         self.location_service = LocationService(self.db)
         self.message_service = MessageService(self.db)
+        self.repository = TransactionHistoryRepository(self.db)
 
     async def create_transaction(self, new_transaction: Dict) -> Transaction:
         try:
@@ -232,7 +235,25 @@ class TransactionService:
                 await self.property_service.change_user_status(transaction.property_id, {
                     "user_id": transaction.buyer_id,
                     "status": PropertyStatus.SOLD
-                    })
+                    })       
+                existing_history = await self.repository.get_transaction_history_by_property_id(transaction.property_id)
+    
+                # If a 'TRANSFER' history already exists, do not create a new one
+                if existing_history and existing_history.transaction_type == TransactionType.TRANSFER:
+                    raise Exception("A transfer history already exists for this property.")
+                
+                transaction_history = TransactionHistory(
+                    transaction_id=transaction.id,
+                    buyer_id=transaction.buyer_id,
+                    seller_id=transaction.seller_id,
+                    property_id=transaction.property_id,
+                    notary_id=transaction.notary_id,
+                    amount=transaction.amount,
+                    transaction_type=TransactionType.TRANSFER,
+                    status=status
+                )
+                await self.repository.create_transaction_history(transaction_history)
+
                 return transaction
             elif status == TransactionStatus.DECLIEND:
                 transaction = await self.transaction_repo.update_transaction(transaction_id, {"status": status})
