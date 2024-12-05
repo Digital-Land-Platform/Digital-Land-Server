@@ -33,7 +33,7 @@ router = APIRouter()
 client_id = Config.get_env_variable("CLIENT_ID")
 auth_domain = Config.get_env_variable("AUTH_DOMAIN")
 audience = Config.get_env_variable("AUDUENCE")
-rediredt_uri = Config.get_env_variable("REDIRECT_URI")
+rediredt_uri = Config.get_env_variable("REDIRECT_URI2")
 
 @router.get("/login")
 def login():

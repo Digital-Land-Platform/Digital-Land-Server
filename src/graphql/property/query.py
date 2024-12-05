@@ -15,7 +15,7 @@ service = PropertyService(db)
 class PropertyQuery:
 
     @strawberry.field
-    async def get_property(self, id: UUID) -> Optional[PropertyType]:
+    async def get_property(self, id: Optional[UUID]) -> Optional[PropertyType]:
         """
         Retrieve a property by its ID.
         

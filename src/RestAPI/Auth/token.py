@@ -43,7 +43,7 @@ invitation_service = InvitationService(db)
 client_id = Config.get_env_variable("CLIENT_ID")
 client_secret = Config.get_env_variable("CLIENT_SECRET")
 auth_domain = Config.get_env_variable("AUTH_DOMAIN")
-rediredt_uri = Config.get_env_variable("REDIRECT_URI")
+rediredt_uri = Config.get_env_variable("REDIRECT_URI2")
 audience = Config.get_env_variable("AUDUENCE")
 
 @router.get("/token")
