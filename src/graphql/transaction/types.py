@@ -46,10 +46,9 @@ class TransactionTypes:
 
 @strawberry.input
 class TransactionInput:
-    buyer_id: str
     property_id: str
     transaction_type: TransactionTypeEnum
-    message: str
+    
 
 @strawberry.input
 class UpdateTransactionInput:
@@ -57,4 +56,4 @@ class UpdateTransactionInput:
     property_id: str | None = None
     transaction_type: TransactionTypeEnum | None = None
     status: TransactionEnum | None = None
-    message: str | None = None
+    

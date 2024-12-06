@@ -13,4 +13,5 @@ class Payment(Base):
     amount = Column(Float, nullable=False)
     confirmed = Column(Boolean, default=False)
     transaction_fee = Column(Float, default=0.0)
+    notary_fee = Column(Float, default=0.0)
     payment_date = Column(DateTime(timezone=True), nullable=True)

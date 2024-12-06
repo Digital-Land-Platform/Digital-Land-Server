@@ -20,10 +20,19 @@ class PaymentService:
                 new_payment["payment_method"] = getattr(PaymentMethod, method_name, None)
                 if new_payment["payment_method"] is None:
                     raise ValueError(f"Invalid payment_method: {method_name}")
-            transaction = await self.transaction_service.get_transaction(new_payment.get("transaction_id"))
+            transaction_data = {
+                "buyer_id": new_payment.pop("buyer_id"),
+                "property_id": new_payment.pop("property_id"),
+                "transaction_type": new_payment.pop("transaction_type"),
+            }
+            
+            transaction = await self.transaction_service.create_transaction(transaction_data)
             if not transaction:
-                raise ValueError(f"Invalid transaction id: {new_payment.get('transaction_id')}")
-            new_payment["amount"] = transaction.amount
+                raise ValueError(f"Invalid transaction: {transaction}")
+            new_payment["transaction_id"] = transaction.id
+            new_payment["notary_fee"]  = 20000
+            new_payment["transaction_fee"] = transaction.amount * 0.05
+            new_payment["amount"] = transaction.amount + new_payment["notary_fee"]
             if new_payment.get("payment_date"):
                 new_payment["payment_date"] = UserProfileValidator.change_str_date(new_payment.get("payment_date"))
             else:
