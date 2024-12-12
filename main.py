@@ -56,10 +56,10 @@ def init_app():
     app.add_exception_handler(CustomException, custom_exception_handler)
 
     # seed_database on deployed database
-    if not isDev:
-        @app.on_event("startup")
-        async def startup_event():
-            await seed_database()
+    # if not isDev:
+    #     @app.on_event("startup")
+    #     async def startup_event():
+    #         await seed_database()
 
     return app
 

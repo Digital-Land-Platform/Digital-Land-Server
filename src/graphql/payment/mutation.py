@@ -15,12 +15,12 @@ payment_service = PaymentService(db)
 class PaymentMutation:
 
     @strawberry.mutation
-    @auth_management.role_required([UserRole.NOTARY, UserRole.ADMIN, UserRole.USER, UserRole.BROKER])
-    @auth_management.isAuth()
+    # @auth_management.role_required([UserRole.NOTARY, UserRole.ADMIN, UserRole.USER, UserRole.BROKER])
+    # @auth_management.isAuth()
     async def create_payment(self, info, payment_data: PaymentInput) -> PaymentTypes:
         try:
             payment_data = vars(payment_data)
-            payment_data["buyer_id"] = info.context.get("user_id")
+            # payment_data["buyer_id"] = info.context.get("user_id")
             payment = await payment_service.create_payment(payment_data)
             return PaymentTypes.from_orm(payment)
         except Exception as e:
