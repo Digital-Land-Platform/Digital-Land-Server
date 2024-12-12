@@ -6,7 +6,6 @@ from config.database import db
 from src.models.enums.UserRole import UserRole
 from src.middleware.AuthManagment import AuthManagement
 
-
 auth_management = AuthManagement()
 payment_service = PaymentService(db)
 
@@ -36,6 +35,7 @@ class PaymentQuery:
     async def get_payments_by_payment_method(self, info, payment_method: PaymentMethod) -> List[PaymentTypes]:
         payments = await payment_service.get_payment_by_payment_method(payment_method)
         return [PaymentTypes.from_orm(payment) for payment in payments]
+
 
     @strawberry.field
     @auth_management.role_required([UserRole.NOTARY, UserRole.ADMIN, UserRole.USER, UserRole.BROKER])

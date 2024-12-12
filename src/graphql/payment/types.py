@@ -8,6 +8,8 @@ class PaymentMethod(enum.Enum):
     CREDIT_CARD = "Credit Card"
     BANK_TRANSFER = "Bank Transfer"
     CRYPTO = "Crypto"
+    MOBILE_MONEY = "Mobile Money"
+    PAYPAL = "Paypal"
 
 @strawberry.type
 class PaymentTypes:
@@ -36,7 +38,7 @@ class PaymentTypes:
 @strawberry.input
 class PaymentInput(TransactionInput):
     payment_method: PaymentMethod
-
+    
 @strawberry.input
 class UpdatePaymentInput:
     transaction_id: str | None = None
