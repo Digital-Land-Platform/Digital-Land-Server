@@ -25,7 +25,7 @@ class PaymentMutation:
             return PaymentTypes.from_orm(payment)
         except Exception as e:
             raise strawberry.exceptions.GraphQLError(f"Error creating payment: {e}")
-    
+        
     @strawberry.mutation
     @auth_management.role_required([UserRole.NOTARY, UserRole.ADMIN, UserRole.USER, UserRole.BROKER])
     async def update_payment(self, info, payment_id: str, payment_data: UpdatePaymentInput) -> PaymentTypes:
