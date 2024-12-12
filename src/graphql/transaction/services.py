@@ -73,21 +73,22 @@ class TransactionService:
             new_transaction["transaction_date"] = datetime.now()
             new_transaction["payment_due_date"] = datetime.now() + timedelta(days=2)
             message = None
-            if new_transaction.get("message"):
-                if new_transaction.get("message"):
-                    message = {
-                        "content": new_transaction.pop("message"),
-                    }
-                transaction = await self.transaction_repo.create_transaction(Transaction(**new_transaction))
-                message["sender_id"] = transaction.buyer_id
-                message["receiver_id"] = transaction.seller_id
-                message["transaction_id"] = transaction.id
-                message["property_id"] = transaction.property_id
-                message["sent_at"] = datetime.now()
-                await self.message_service.create_message(message)            
-            else:
-                new_transaction.pop("message")
-                transaction = await self.transaction_repo.create_transaction(Transaction(**new_transaction))
+            # if new_transaction.get("message") and new_transaction.get("message") != ""\
+            #         and new_transaction.get("message") is not None:
+            #     if new_transaction.get("message"):
+            #         message = {
+            #             "content": new_transaction.pop("message"),
+            #         }
+            #     transaction = await self.transaction_repo.create_transaction(Transaction(**new_transaction))
+            #     message["sender_id"] = transaction.buyer_id
+            #     message["receiver_id"] = transaction.seller_id
+            #     message["transaction_id"] = transaction.id
+            #     message["property_id"] = transaction.property_id
+            #     message["sent_at"] = datetime.now()
+            #     await self.message_service.create_message(message)            
+            # elif new_transaction.get("message") == "" or new_transaction.get("message") is None:
+            #     new_transaction.pop("message")
+            transaction = await self.transaction_repo.create_transaction(Transaction(**new_transaction))
             return transaction
         except Exception as e:
             raise Exception(f"Error creating transaction: {e}")

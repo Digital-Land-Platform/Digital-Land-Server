@@ -1,3 +1,4 @@
+from src.graphql.transaction.types import TransactionInput
 import strawberry
 import enum
 
@@ -17,6 +18,7 @@ class PaymentTypes:
     confirmed: bool
     transaction_fee: float
     payment_date: str
+    notary_fee: float
 
     @classmethod
     def from_orm(cls, payment):
@@ -28,15 +30,12 @@ class PaymentTypes:
             confirmed=payment.confirmed,
             transaction_fee=payment.transaction_fee,
             payment_date=payment.payment_date.isoformat(),
+            notary_fee=payment.notary_fee
         )
 
 @strawberry.input
-class PaymentInput:
-    transaction_id: str
+class PaymentInput(TransactionInput):
     payment_method: PaymentMethod
-    confirmed: bool
-    transaction_fee: float
-    payment_date: str | None = None
 
 @strawberry.input
 class UpdatePaymentInput:
