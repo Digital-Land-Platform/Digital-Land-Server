@@ -59,7 +59,7 @@ Click here to get the latest -> <a href="#dev_guide">Developer Guidelines</a>
    ```bash
    pip3 install
    ```
-   
+
 4. Run database migrations:
 
 ```bash
@@ -82,7 +82,7 @@ pytest
 
 We welcome contributions from the Team. Please, read our Contributing Guidelines and Code of Conduct before making a pull request.
 
-### Contributing Guidelines and Code of Conduct:
+### Contributing Guidelines and Code of Conduct
 
 - You have to make a new branch every time you are going to work either on a new feature or issue
 - Changes must be reviewed and approved by the CTO before merging them into the default branch.
@@ -106,12 +106,11 @@ Just run:
 
 2. *Function* names should be written as action words or phrases.
 
-3. *Controllers* should be independent of each other in respective folders. Each folder should contain the files, __init__.py, index.py, mutation.py, query.py, and services.py. *Controller classes* in these files should be appended with the file names and written in **PascalCase** as in *UserMutation*, *UserQuery*, and *UserService*.
+3. *Controllers* should be independent of each other in respective folders. Each folder should contain the files, **init**.py, index.py, mutation.py, query.py, and services.py. *Controller classes* in these files should be appended with the file names and written in **PascalCase** as in *UserMutation*, *UserQuery*, and *UserService*.
 
 4. *Model file* names should be written in **PascalCase**.
 
 5. *Middleware file* names should be written in **PascalCase** and be appended with the word, *Handler*, as in *CustomErrorHandler*.
-
 
 The headers of the following table make up the naming standards to be adopted in developing the system.
 The names of the items under each column should be written according to the style of the table header for that column.
@@ -124,6 +123,28 @@ The names of the items under each column should be written according to the styl
 |                   | attributes/columns |        |      |                  |
 |                   | route_methods    |        |      |                  |
 |                   | test_functions   |        |      |                  |
+
+---
+
+### Errors and Exceptions handling
+
+There are a predifined centralized way of hundling errors and exceptions in this project which has to be followed by every developer.
+
+**Quick Overview** on how errors and exceptions are being handled
+
+- There are a use of custom exception hundlers to handler exceptions
+- Repository layer whihc deals with database only, service layer which interact with repository layer to hundle business logic and hundle almost exceptions and raise them, at last there are Mutations and Query(API/ROUTES) layer which interact with service layer to make communication between client be possible and exceptions are being handled by centralized decorators which make ROUTES remain clean.
+- All internal server errors has to be logged by `logger.error` which is set up in `Config.logging` file on the root directory of the project. You can use it by simply importing it like this and be able to access logg levels like `logger.info`
+
+**For clear detailed description, you can refer to this [Documentation](docs/wiki/ExceptionHundling.md)**
+
+---
+
+### Reviewing Guidelines
+
+- Check for any vulnerability, provide feedback if there any vulnerability or something to take care of or even when you need clarification
+- Request changes if needed or provide comment
+- Approve it if you see that it is bug free
 
 ---
 
@@ -142,7 +163,6 @@ To ensure consistency and security, all environment variables should be specifie
 - `DB_PASSWORD:` The password for the database user.
 - `DB_USER:` The username for the database.
 - `DB_CONFIG:` The database connection string.
-
 
 ```md
 APP_ENV=********************************

@@ -1,6 +1,9 @@
 import strawberry
 from uuid import UUID
 from typing import Optional, List
+from src.middleware.ErrorHundlers.CustomErrorHandler import (
+    CustomException, InternalServerErrorException, NotFoundException
+)
 from src.models.Amenity import Amenity as Amenities
 from src.models.repository.AmenityRepository import AmenityRepository
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -25,10 +28,15 @@ class AmenityService:
         Returns:
             Amenities: The created amenity object.
         """
-        existing_amenity = await self.repository.get_amenity_by_title(amenity_data.title)
-        if existing_amenity:
-            raise Exception(f"Amenity '{amenity_data.title}' already exists.")
-        return await self.repository.create_amenity(amenity_data)
+        try:
+            existing_amenity = await self.repository.get_amenity_by_title(amenity_data.title)
+            if existing_amenity:
+                raise CustomException(status_code=409, detail=f"Amenity called '{amenity_data.title}' already exists.")
+            return await self.repository.create_amenity(amenity_data)
+        except Exception as e:
+            raise CustomException(status_code=500, detail="Error creating amenity.")
+        except Exception as e:
+            raise InternalServerErrorException()
     
     async def update_amenity(self, amenity_id: UUID, amenity_update_input: AmenityUpdateInput) -> Optional[Amenities]:
         """
@@ -41,17 +49,22 @@ class AmenityService:
         Returns:
             Optional[Amenities]: The updated amenity.
         """
-        amenity = await self.repository.get_amenity_by_id(amenity_id)
-        
-        if not amenity:
-            raise Exception("Amenity not found")
+        try:
+            amenity = await self.repository.get_amenity_by_id(amenity_id)
+            
+            if not amenity:
+                raise NotFoundException("Amenity not found")
 
-        if amenity_update_input.title is not None:
-            amenity.title = amenity_update_input.title
-        if amenity_update_input.icon is not None:
-            amenity.icon = amenity_update_input.icon
+            if amenity_update_input.title is not None:
+                amenity.title = amenity_update_input.title
+            if amenity_update_input.icon is not None:
+                amenity.icon = amenity_update_input.icon
 
-        return await self.repository.update_amenity(amenity)
+            return await self.repository.update_amenity(amenity)
+        except NotFoundException as e:
+            raise e
+        except Exception as e:
+            raise InternalServerErrorException()
 
     async def delete_amenity(self, amenity_id: UUID) -> bool:
         """
@@ -63,8 +76,10 @@ class AmenityService:
         Returns:
             bool: True if the amenity was deleted successfully, False otherwise.
         """
-        
-        return await self.repository.delete_amenity(amenity_id)
+        try:
+            return await self.repository.delete_amenity(amenity_id)
+        except Exception as e:
+            raise InternalServerErrorException()
     
     async def list_all_amenities(self):
         """
@@ -73,7 +88,10 @@ class AmenityService:
         Returns:
             List[Amenities]: A list of all amenities.
         """
-        return await self.repository.get_all_amenities()
+        try:
+            return await self.repository.get_all_amenities()
+        except Exception as e:
+            raise InternalServerErrorException()
     
     async def get_amenity_by_id(self, amenity_id: UUID):
         """
@@ -85,4 +103,7 @@ class AmenityService:
         Returns:
             Optional[Amenities]: The amenity if found, else None.
         """
-        return await self.repository.get_amenity_by_id(amenity_id)
+        try:
+            return await self.repository.get_amenity_by_id(amenity_id)
+        except Exception as e:
+            raise InternalServerErrorException()   

@@ -1,6 +1,7 @@
 import strawberry
 from strawberry.types import Info
 from strawberry.directive import DirectiveValue
+from src.middleware.ErrorHundlers.ExceptionHundler import ExceptionHandler
 from src.models.enums.UserRole import UserRole
 from .types import UserProfileAuditLogType, UserProfileType, UserProfileInput
 from src.models.UserProfile import UserProfile
@@ -8,6 +9,10 @@ from fastapi import HTTPException
 from .service import UserProfileService
 from src.middleware.AuthManagment import AuthManagement
 from config.database import db
+from src.middleware.ErrorHundlers.CustomErrorHandler import (
+    BadRequestException
+)
+
 
 auth_management = AuthManagement()
 user_profile_service = UserProfileService(db)
@@ -16,32 +21,25 @@ user_profile_service = UserProfileService(db)
 class UserProfile:
 
     @strawberry.field
+    @ExceptionHandler.handle_exceptions
     async def get_user_profile(self, user_profile_id: DirectiveValue[str]) -> UserProfileType:
-        try:
-            user_profile = await user_profile_service.get_user_profile_by_id(user_profile_id)
-            if not user_profile:
-                raise HTTPException(status_code=400, detail="User profile not found")
-            return UserProfileType.from_model(user_profile)
-        except HTTPException as e:
-            raise strawberry.exceptions.GraphQLError(e.detail)
+        user_profile = await user_profile_service.get_user_profile_by_id(user_profile_id)
+        if not user_profile:
+            raise BadRequestException(detail="User profile not found")
+        return UserProfileType.from_model(user_profile)
     
     @strawberry.field
+    @auth_management.isAuth()
     @auth_management.role_required([UserRole.ADMIN])
+    @ExceptionHandler.handle_exceptions
     async def delete_user_profile(self, user_profile_id: DirectiveValue[str]) -> DirectiveValue[str]:
-        try:
-            deleted_profile = await user_profile_service.delete_user_profile(user_profile_id)
-            if not deleted_profile:
-                raise HTTPException(status_code=400, detail="Failed to delete user profile")
-            return deleted_profile
-        except HTTPException as e:
-            raise strawberry.exceptions.GraphQLError(e.detail)
+        deleted_profile = await user_profile_service.delete_user_profile(user_profile_id)
+        return deleted_profile
     
     @strawberry.field
+    @auth_management.isAuth()
+    @auth_management.role_required([UserRole.ADMIN])
+    @ExceptionHandler.handle_exceptions
     async def get_all_audit_logs(self, user_profile_id: DirectiveValue[str]) -> list[UserProfileAuditLogType]:
-        try:
-            audit_logs = await user_profile_service.get_all_audit_logs(user_profile_id)
-            if not audit_logs:
-                raise HTTPException(status_code=400, detail="No audit logs found")
-            return [UserProfileAuditLogType.from_model(audit_log) for audit_log in audit_logs]
-        except HTTPException as e:
-            raise strawberry.exceptions.GraphQLError(e.detail)
+        audit_logs = await user_profile_service.get_all_audit_logs(user_profile_id)
+        return [UserProfileAuditLogType.from_model(audit_log) for audit_log in audit_logs]

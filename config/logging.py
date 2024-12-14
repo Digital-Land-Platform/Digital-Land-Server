@@ -1,9 +1,9 @@
 import logging
 
 
+logger = logging.getLogger("uvicorn")
+
 def setup_logger():
-    # Set up logging
-    logger = logging.getLogger("uvicorn")
     logger.setLevel(logging.DEBUG)
 
     # Create handlers

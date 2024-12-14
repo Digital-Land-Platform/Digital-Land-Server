@@ -1,4 +1,6 @@
 import strawberry
+from src.middleware.ErrorHundlers.ExceptionHundler import ExceptionHandler
+from src.middleware.ErrorHundlers.CustomErrorHandler import InternalServerErrorException, BadRequestException
 from .types import LocationType
 from .service import LocationService
 from config.database import db
@@ -9,17 +11,16 @@ location_service = LocationService(db)
 class LocationQuery:
 
     @strawberry.field
+    @ExceptionHandler.handle_exceptions
     async def get_location(self, location_id: str) -> LocationType:
-        try:
-            location = await location_service.get_location_by_id(location_id)
-            return LocationType.from_model(location) if location else None
-        except Exception as e:
-            raise strawberry.exceptions.GraphQLError(f"Failed to get Location: {e}")
+        location = await location_service.get_location_by_id(location_id)
+        if not location:
+            raise BadRequestException("Location not found")
+        return LocationType.from_model(location)
     
     @strawberry.field
+    @ExceptionHandler.handle_exceptions
     async def get_locations(self) -> list[LocationType]:
-        try:
-            locations = await location_service.get_all_locations()
-            return [LocationType.from_model(location) for location in locations]
-        except Exception as e:
-            raise strawberry.exceptions.GraphQLError(f"Failed to get Locations: {e}")
+        locations = await location_service.get_all_locations()
+        return [LocationType.from_model(location) for location in locations]
+    

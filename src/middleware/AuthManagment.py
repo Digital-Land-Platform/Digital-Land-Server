@@ -25,10 +25,14 @@ import os
 import jwt  # PyJWT, not the jose.jwt
 from jwt import algorithms
 from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError, InvalidTokenError
+from src.middleware.ErrorHundlers.CustomErrorHandler import (
+    BadRequestException, ForbiddenException, GenericException, InternalServerErrorException, NotFoundException, UnauthorizedException
+)
 from src.graphql.users.services import UserService
 from src.models.enums.UserRole import UserRole
 from config.database import db
 from config.config import Config
+from config.logging import logger
 
 auth_domain = Config.get_env_variable("AUTH_DOMAIN")
 audience = Config.get_env_variable("AUDUENCE")
@@ -58,9 +62,11 @@ class AuthManagement():
             self.jwks_endpoint = f"https://{auth_domain}/.well-known/jwks.json"
             self.jwks = requests.get(self.jwks_endpoint).json()["keys"]
         except requests.exceptions.RequestException as e:
-            raise HTTPException(status_code=500, detail=f"Failed to retrieve JWKS: {str(e)}")
+            logger.error(f"Failed to retrieve JWKS: {str(e)}") # Log the error
+            raise InternalServerErrorException()
         except KeyError:
-            raise HTTPException(status_code=500, detail="JWKS response did not contain expected keys.")
+            logger.error(f"JWKS response did not contain expected keys.")
+            raise InternalServerErrorException()
 
 
     def find_public_key(self, kid):
@@ -100,10 +106,10 @@ class AuthManagement():
                 
                 public_key = self.find_public_key(unverified_headers["kid"])
                 if public_key is None:
-                    raise HTTPException(status_code=401, detail="Invalid key ID, public key not found")
+                    raise UnauthorizedException("Invalid key ID, public key not found")
                 
                 if public_key.get("kty") != "RSA":
-                    raise HTTPException(status_code=401, detail="Invalid key type")
+                    raise UnauthorizedException("Invalid key type")
                 pem_key = algorithms.RSAAlgorithm.from_jwk(public_key)
                 # Decode the token using the RSA public key
                 token_payload = jwt.decode(
@@ -115,11 +121,11 @@ class AuthManagement():
                 )
                 return token_payload
             except ExpiredSignatureError:
-                raise HTTPException(status_code=401, detail="Token has expired")
+                raise UnauthorizedException("Token has expired")
             except InvalidSignatureError:
-                raise HTTPException(status_code=401, detail="Invalid token signature")
+                raise UnauthorizedException("Invalid token signature")
             except InvalidTokenError as e:
-                raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+                raise UnauthorizedException(f"Invalid token: {str(e)}")
 
     def get_user_info(self, token):
         """
@@ -145,12 +151,12 @@ class AuthManagement():
 
         # Check if the response status code is not 200 (OK)
         if response.status_code == 401:
-            raise HTTPException(status_code=401, detail="Unauthorized: Invalid or expired token")
+            raise UnauthorizedException("Unauthorized: Invalid or expired token")
         elif response.status_code == 403:
-            raise HTTPException(status_code=403, detail="Forbidden: You do not have access to this resource")
+            raise ForbiddenException("Forbidden: You do not have access to this resource")
         elif response.status_code != 200:
             # Catch all other non-success status codes
-            raise HTTPException(
+            raise GenericException(
                 status_code=response.status_code,
                 detail=f"Error fetching user info: {response.text}"
             )
@@ -159,7 +165,7 @@ class AuthManagement():
         try:
             return response.json()
         except ValueError:
-            raise HTTPException(status_code=500, detail="Failed to parse user info response")
+            raise InternalServerErrorException("Failed to parse user info response")
 
     def role_required(self, required_roles):
         """
@@ -186,7 +192,7 @@ class AuthManagement():
                 info = kwargs.get('info')  # For GraphQL, you'll get `info` from the arguments
                 authorization_header = info.context["request"].headers.get("authorization")
                 if not authorization_header:
-                    raise HTTPException(status_code=403, detail="Authorization header missing")
+                    raise ForbiddenException("Authorization header missing")
                 
                 # Assuming `auth_management.get_user_info` returns user role info
                 token = authorization_header.split("Bearer ")[1]
@@ -195,7 +201,7 @@ class AuthManagement():
                 
                 role = user.role
                 if role not in required_roles:
-                    raise HTTPException(status_code=403, detail="Access forbidden: UnAuthorized role")
+                    raise ForbiddenException("Access forbidden: UnAuthorized role")
                 
                 return await func(*args, **kwargs)
             return wrapper
@@ -212,28 +218,28 @@ class AuthManagement():
                 # Extract `info` from `kwargs`
                 info = kwargs.get('info')
                 if not info:
-                    raise HTTPException(status_code=400, detail="GraphQL context missing")
+                    raise BadRequestException("GraphQL context missing")
                 
                 authorization_header = info.context["request"].headers.get("authorization")
                 if not authorization_header:
-                    raise HTTPException(status_code=401, detail="Authorization header missing")
+                    raise UnauthorizedException("Authorization header missing")
 
-                try:
-                    # Validate the token and retrieve user information
-                    token = authorization_header.split("Bearer ")[1]
-                    user_info = self.get_user_info(token)  # Decode/verify token
+                # Validate the token and retrieve user information
+                token = authorization_header.split("Bearer ")[1]
+                user_info = self.get_user_info(token)  # Decode/verify token
                     
-                    # Fetch user details
-                    user = await userService.get_user_by_email(user_info.get("email"))
+                # Fetch user details
+                user = await userService.get_user_by_email(user_info.get("email"))
 
-                    # Attach user info to the `info` context
-                    info.context["user_id"] = user.id
-                    info.context["email"] = user.email
+                if not user:
+                    raise UnauthorizedException("User not found")
+                
+                # Attach user info to the `info` context
+                info.context["user_id"] = user.id
+                info.context["role"] = user.role
+                info.context["email"] = user.email
 
-                    # Proceed with the original function
-                    return await func(*args, **kwargs)
-
-                except Exception as e:
-                    raise HTTPException(status_code=401, detail=f"Authentication failed: {str(e)}")
+                # Proceed with the original function
+                return await func(*args, **kwargs)
             return wrapper
         return decorator

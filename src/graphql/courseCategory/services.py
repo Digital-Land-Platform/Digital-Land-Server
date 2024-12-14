@@ -3,7 +3,12 @@ from src.models.repository.CourseCategoryRepository import CourseCategoryReposit
 from uuid import UUID
 from .types import CourseCategoryType
 from typing import Optional, List
-
+from src.middleware.ErrorHundlers.CustomErrorHandler import (
+    BadRequestException,
+    NotFoundException,
+    InternalServerErrorException,
+    CustomException,
+)
 
 class CourseCategoryService:
     def __init__(self, db):
@@ -16,8 +21,11 @@ class CourseCategoryService:
         Returns:
             CourseCategory: The created category
         """
-        new_category = CourseCategory(name=name)
-        return await self.category_repository.create_category(new_category)
+        try:
+            new_category = CourseCategory(name=name)
+            return await self.category_repository.create_category(new_category)
+        except Exception as e:
+            raise InternalServerErrorException()
 
     async def update_category(self, category_id: UUID, name: str) -> CourseCategory:
         """Update a category
@@ -27,11 +35,16 @@ class CourseCategoryService:
         Returns:
             CourseCategory: The updated category
         """
-        category = await self.category_repository.get_category_by_id(category_id)
-        if category:
-            category.name = name
-            return await self.category_repository.update_category(category)
-        raise Exception("Category not found")
+        try:
+            category = await self.category_repository.get_category_by_id(category_id)
+            if category:
+                category.name = name
+                return await self.category_repository.update_category(category)
+            raise NotFoundException(detail="Category not found")
+        except NotFoundException as e:
+            raise e
+        except Exception as e:
+            raise InternalServerErrorException()
 
     async def delete_category(self, category_id: UUID) -> str:
         """Delete a category
@@ -40,18 +53,26 @@ class CourseCategoryService:
         Returns:
             str: A message indicating the success of the operation
         """
-        category = await self.category_repository.get_category_by_id(category_id)
-        if category:
-            await self.category_repository.delete_category(category)
-            return "Category deleted"
-        raise Exception("Category not found")
+        try:
+            category = await self.category_repository.get_category_by_id(category_id)
+            if category:
+                await self.category_repository.delete_category(category)
+                return "Category deleted"
+            raise NotFoundException(detail="Category not found")
+        except NotFoundException as e:
+            raise e
+        except Exception as e:
+            raise InternalServerErrorException()
     
     async def get_all_categories(self) -> List[CourseCategory]:
         """Get all categories
         Returns
             List[CourseCategory]: A list of all categories
         """
-        return await self.category_repository.get_all_categories()
+        try:
+            return await self.category_repository.get_all_categories()
+        except Exception as e:
+            raise InternalServerErrorException()
 
     async def get_category_by_id(self, category_id: UUID) -> CourseCategory:
         """Get a category by id
@@ -60,16 +81,29 @@ class CourseCategoryService:
         Returns:
             CourseCategory: The category
         """
-        return await self.category_repository.get_category_by_id(category_id)
+        try:
+            category = await self.category_repository.get_category_by_id(category_id)
+            if not category:
+                raise NotFoundException(detail="Category not found")
+            return category
+        except NotFoundException as e:
+            raise e
+        except Exception as e:
+            raise InternalServerErrorException()
         
-    async def get_category_by_name(self, name: str):
+    async def get_category_by_name(self, name: str) -> CourseCategory:
         """Get a category by name
         Args:
             name (str): The name of the category to get
         Returns:
             CourseCategory: The category
         """
-        # Calls the repository method to check for an existing category by name
-        return await self.category_repository.get_category_by_name(name)
-    
-    
+        try:
+            category = await self.category_repository.get_category_by_name(name)
+            if not category:
+                raise NotFoundException(detail="Category not found")
+            return category
+        except NotFoundException as e:
+            raise e
+        except Exception as e:
+            raise InternalServerErrorException()

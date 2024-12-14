@@ -1,5 +1,6 @@
 import strawberry
 from uuid import UUID
+from src.middleware.ErrorHundlers.ExceptionHundler import ExceptionHandler
 from .services import ReelService
 from typing import List, Optional
 from .types import ReelType
@@ -7,12 +8,16 @@ import cloudinary.uploader
 from config.database import db
 from strawberry.file_uploads import Upload
 from .types import ReelCreateInput, ReelType, ReelUpdateInput
+from src.middleware.AuthManagment import AuthManagement
 
+auth_management = AuthManagement()
 services = ReelService(db.SessionLocal())
 
 @strawberry.type
 class ReelMutation:
     @strawberry.mutation
+    @auth_management.isAuth()
+    @ExceptionHandler.handle_exceptions
     async def create_reel(self, property_id: UUID, reel_data: ReelCreateInput) -> ReelType:
         """Create a new reel.
         Args:
@@ -34,6 +39,8 @@ class ReelMutation:
         )
     
     @strawberry.mutation
+    @auth_management.isAuth()
+    @ExceptionHandler.handle_exceptions
     async def update_reel(
         self, 
         reel_id: UUID, 
@@ -61,6 +68,8 @@ class ReelMutation:
 
 
     @strawberry.mutation
+    @auth_management.isAuth()
+    @ExceptionHandler.handle_exceptions
     async def delete_reel(self, reel_id: UUID, creator_id: UUID) -> bool:
         """Delete a reel by its ID.
         Args:
@@ -71,6 +80,8 @@ class ReelMutation:
         return await services.delete_reel(reel_id, creator_id)
 
     @strawberry.mutation
+    @auth_management.isAuth()
+    @ExceptionHandler.handle_exceptions
     async def get_reel(self, reel_id: UUID) -> ReelType:
         """Get a reel by its ID
         Args:
@@ -89,3 +100,4 @@ class ReelMutation:
             description=reel.description,
             url=reel.url,
         )
+    

@@ -58,3 +58,4 @@ class CourseCategoryRepository:
             # Query the database to get all categories
             result = await session.execute(select(CourseCategory))
             return result.scalars().all()
+        

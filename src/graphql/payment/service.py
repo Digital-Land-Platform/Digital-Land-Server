@@ -1,10 +1,14 @@
 from datetime import datetime
+from config.logging import logger
 from src.models.repository.PaymentRepository import PaymentRepository
 from src.models.Payment import Payment
 from src.models.enums.PaymentMethod import PaymentMethod
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.middleware.UserProfileValidator import UserProfileValidator
 from src.graphql.transaction.services import TransactionService
+from src.middleware.ErrorHundlers.CustomErrorHandler import (
+    BadRequestException, InternalServerErrorException, NotFoundException
+)
 
 class PaymentService:
 
@@ -19,7 +23,7 @@ class PaymentService:
                 method_name = new_payment.get("payment_method").name
                 new_payment["payment_method"] = getattr(PaymentMethod, method_name, None)
                 if new_payment["payment_method"] is None:
-                    raise ValueError(f"Invalid payment_method: {method_name}")
+                    raise BadRequestException(f"Invalid payment_method: {method_name}")
             transaction_data = {
                 "buyer_id": new_payment.pop("buyer_id"),
                 "property_id": new_payment.pop("property_id"),
@@ -28,7 +32,7 @@ class PaymentService:
             
             transaction = await self.transaction_service.create_transaction(transaction_data)
             if not transaction:
-                raise ValueError(f"Invalid transaction: {transaction}")
+                raise BadRequestException(f"Invalid transaction: {transaction}")
             new_payment["transaction_id"] = transaction.id
             new_payment["notary_fee"]  = 20000
             new_payment["transaction_fee"] = transaction.amount * 0.05
@@ -39,8 +43,15 @@ class PaymentService:
                 new_payment["payment_date"] = datetime.now()
             payment = await self.payment_repo.create_payment(Payment(**new_payment))
             return payment
+        except BadRequestException as e:
+            raise e
+        except NotFoundException as e:
+            raise e
+        except InternalServerErrorException as e:
+            raise e
         except Exception as e:
-            raise Exception(f"Error creating payment: {e}")
+            logger.error(f"Error creating payment: {e}")
+            raise InternalServerErrorException()
     
     async def update_payment(self, payment_id: str, payment_data: dict) -> Payment:
         try:
@@ -55,32 +66,45 @@ class PaymentService:
                 payment_data["payment_date"] = datetime.now()
             payment = await self.payment_repo.update_payment(payment_id, payment_data)
             return payment
+        except ValueError as e:
+            raise e
+        except BadRequestException as e:
+            raise e
+        except NotFoundException as e:
+            raise e
+        except InternalServerErrorException as e:
+            raise e
         except Exception as e:
-            raise Exception(f"Error updating payment: {e}")
+            logger.error(f"Error updating payment: {e}")
+            raise InternalServerErrorException()
     
     async def get_payment(self, payment_id: str) -> Payment:
         try:
             return await self.payment_repo.get_payment(payment_id)
         except Exception as e:
-            raise Exception(f"Error getting payment: {e}")
+            logger.error(f"Error getting payment: {e}") 
+            raise InternalServerErrorException()
     
     async def delete_payment(self, payment_id: str) -> str:
         try:
             return await self.payment_repo.delete_payment(payment_id)
         except Exception as e:
-            raise Exception(f"Error deleting payment: {e}")
+            logger.error(f"Error deleting payment: {e}")
+            raise InternalServerErrorException()
     
     async def get_payments(self) -> list:
         try:
             return await self.payment_repo.get_all_payments()
         except Exception as e:
-            raise Exception(f"Error getting payments: {e}")
+            logger.error(f"Error getting payments: {e}")
+            raise InternalServerErrorException()
     
     async def get_payments_by_confirm(self, confirm: bool) -> list:
         try:
             return await self.payment_repo.get_payments_confirmed(confirm)
         except Exception as e:
-            raise Exception(f"Error getting payments by confirm: {e}")
+            logger.error(f"Error getting payments: {e}")
+            raise InternalServerErrorException()
     
     async def get_payment_by_payment_method(self, payment_method: PaymentMethod) -> list:
         try:
@@ -90,15 +114,15 @@ class PaymentService:
                 if not payment_method:
                     raise ValueError(f"Invalid payment_method: {payment_method}")
             return await self.payment_repo.get_payments_by_payment_method(payment_method)
+        except ValueError as e:
+            raise e
         except Exception as e:
-            raise Exception(f"Error getting payment by payment method: {e}")
+            logger.error(f"Error getting payments: {e}")
+            raise InternalServerErrorException()
     
     async def get_payment_by_transaction_id(self, transaction_id: str) -> Payment:
         try:
             return await self.payment_repo.get_payment_by_transaction_id(transaction_id)
         except Exception as e:
-            raise Exception(f"Error getting payment by transaction id: {e}")
-    
-    
-
-
+            logger.error(f"Error getting payment: {e}")
+            raise InternalServerErrorException()

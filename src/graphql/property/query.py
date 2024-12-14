@@ -1,6 +1,7 @@
 import strawberry
 from uuid import UUID
 from typing import Optional, List
+from src.middleware.ErrorHundlers.ExceptionHundler import ExceptionHandler
 from .services import PropertyService  
 from .mutation import PropertyType 
 from .types import AmenitiesType 
@@ -15,6 +16,7 @@ service = PropertyService(db)
 class PropertyQuery:
 
     @strawberry.field
+    @ExceptionHandler.handle_exceptions
     async def get_property(self, id: Optional[UUID]) -> Optional[PropertyType]:
         """
         Retrieve a property by its ID.
@@ -29,6 +31,7 @@ class PropertyQuery:
         return await service.get_property(id)
 
     @strawberry.field
+    @ExceptionHandler.handle_exceptions
     async def list_properties(self) -> List[PropertyType]:
         """
         List all properties.

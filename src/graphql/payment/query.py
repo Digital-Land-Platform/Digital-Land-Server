@@ -1,5 +1,6 @@
 from typing import List
 import strawberry
+from src.middleware.ErrorHundlers.ExceptionHundler import ExceptionHandler
 from .types import PaymentMethod, PaymentTypes
 from .service import PaymentService
 from config.database import db
@@ -13,32 +14,36 @@ payment_service = PaymentService(db)
 class PaymentQuery:
     
     @strawberry.field
-    @auth_management.role_required([UserRole.NOTARY, UserRole.ADMIN, UserRole.USER, UserRole.BROKER])
+    @auth_management.isAuth()
+    @ExceptionHandler.handle_exceptions
     async def get_payments(self, info) -> List[PaymentTypes]:
         payments = await payment_service.get_payments()
         return [PaymentTypes.from_orm(payment) for payment in payments]
 
     @strawberry.field
-    @auth_management.role_required([UserRole.NOTARY, UserRole.ADMIN, UserRole.USER, UserRole.BROKER])
+    @auth_management.isAuth()
+    @ExceptionHandler.handle_exceptions
     async def get_payment_by_id(self, info, payment_id: str) -> PaymentTypes:
         payment = await payment_service.get_payment(payment_id)
         return PaymentTypes.from_orm(payment)
 
     @strawberry.field
-    @auth_management.role_required([UserRole.NOTARY, UserRole.ADMIN, UserRole.USER, UserRole.BROKER])
+    @auth_management.isAuth()
+    @ExceptionHandler.handle_exceptions
     async def get_payments_by_transaction_id(self, info, transaction_id: str) -> PaymentTypes:
         payment = await payment_service.get_payment_by_transaction_id(transaction_id)
         return PaymentTypes.from_orm(payment)
 
     @strawberry.field
-    @auth_management.role_required([UserRole.NOTARY, UserRole.ADMIN, UserRole.USER, UserRole.BROKER])
+    @auth_management.isAuth()
+    @ExceptionHandler.handle_exceptions
     async def get_payments_by_payment_method(self, info, payment_method: PaymentMethod) -> List[PaymentTypes]:
         payments = await payment_service.get_payment_by_payment_method(payment_method)
         return [PaymentTypes.from_orm(payment) for payment in payments]
 
-
     @strawberry.field
-    @auth_management.role_required([UserRole.NOTARY, UserRole.ADMIN, UserRole.USER, UserRole.BROKER])
+    @auth_management.isAuth()
+    @ExceptionHandler.handle_exceptions
     async def get_payments_by_confirmed(self, info, confirmed: bool) -> List[PaymentTypes]:
         payments = await payment_service.get_payments_by_confirm(confirmed)
         return [PaymentTypes.from_orm(payment) for payment in payments]   
