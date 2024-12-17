@@ -1,7 +1,7 @@
 from src.models.repository.CourseContentRepository import CourseContentRepository
 from src.graphql.courseContent.types import CourseContentCreateInput, CourseContentUpdateInput
 from src.models.CourseContent import CourseContent
-from src. models.enums.ContentType import ContentType
+from src.models.enums.ContentType import ContentType
 from .types import CourseContentType
 from uuid import UUID
 import uuid
@@ -9,6 +9,12 @@ import cloudinary
 from typing import List
 from strawberry.file_uploads import Upload
 from sqlalchemy.ext.asyncio import AsyncSession
+from src.middleware.ErrorHundlers.CustomErrorHandler import (
+    BadRequestException,
+    NotFoundException,
+    InternalServerErrorException,
+    CustomException,
+)
 
 class CourseContentService:
     def __init__(self, db: AsyncSession):
@@ -25,8 +31,7 @@ class CourseContentService:
             video_url = upload_result.get('secure_url')
             return video_url
         except Exception as e:
-            print(f"Error uploading video: {e}")
-            return ""
+            raise InternalServerErrorException()
 
     async def create_content(self, course_id: UUID, content_data: CourseContentCreateInput) -> "CourseContentType":
         """
@@ -37,13 +42,11 @@ class CourseContentService:
         Returns:
             CourseContentType: Created course content
         """
-        existing_content = await self.repository.get_content_by_course_and_title(course_id, content_data.title)
-        
-        if existing_content:
-            raise Exception(f"Content of type {content_data.content_type} already exists for this course.")
-
         try:
-                
+            existing_content = await self.repository.get_content_by_course_and_title(course_id, content_data.title)
+            if existing_content:
+                raise CustomException(status_code=409, detail=f"Content of type {content_data.content_type} already exists for this course.")
+
             # Determine which field to populate based on the content type
             content_url = None
             text_content = None
@@ -65,9 +68,10 @@ class CourseContentService:
             )
 
             return await self.repository.create_content(content)
+        except (CustomException, BadRequestException, NotFoundException) as e:
+            raise e
         except Exception as e:
-            print(f"Error creating content: {e}")
-            raise Exception("Error creating content")
+            raise InternalServerErrorException()
 
     async def update_content(self, content_id: UUID, content_data: CourseContentUpdateInput) -> "CourseContentType":
         """
@@ -78,31 +82,33 @@ class CourseContentService:
         Returns:
             CourseContentType: Updated course content
         """
-        # Retrieve content by ID
-        content = await self.repository.get_content_by_id(content_id)
-        
-        if not content:
-            raise Exception("Content not found")
-        
-        if content_data.content_type is not None:
-            content.content_type = content_data.content_type
+        try:
+            # Retrieve content by ID
+            content = await self.repository.get_content_by_id(content_id)
+            if not content:
+                raise NotFoundException(detail="Content not found")
             
-            if content.content_type in {ContentType.VIDEO, ContentType.REEL}:
-                if content_data.file:
-                    if content.content_url:
-                        public_id = content.content_url.split('/')[-1].split('.')[0]
-                        cloudinary.uploader.destroy(public_id, resource_type="video")
-                        
-                    content.content_url = await self.upload_video(content_data.file)
-                    print(f"Deleting video with public_id: {public_id}")
-                    content.text_content = None  # Clear text content if not applicable
+            if content_data.content_type is not None:
+                content.content_type = content_data.content_type
                 
-            elif content.content_type in {ContentType.ARTICLE, ContentType.QUIZ}:
-                content.text_content = content_data.content if content_data.content is not None else content.text_content
-                content.content_url = None  # Clear URL if not applicable
-        content.title = content_data.title or content.title  if content_data.title is not None else content.title       
-        return await self.repository.update_content(content)
-        raise Exception("Content not found")
+                if content.content_type in {ContentType.VIDEO, ContentType.REEL}:
+                    if content_data.file:
+                        if content.content_url:
+                            public_id = content.content_url.split('/')[-1].split('.')[0]
+                            cloudinary.uploader.destroy(public_id, resource_type="video")
+                            
+                        content.content_url = await self.upload_video(content_data.file)
+                        content.text_content = None  # Clear text content if not applicable
+                    
+                elif content.content_type in {ContentType.ARTICLE, ContentType.QUIZ}:
+                    content.text_content = content_data.text_content if content_data.text_content is not None else content.text_content
+                    content.content_url = None  # Clear URL if not applicable
+            content.title = content_data.title or content.title if content_data.title is not None else content.title       
+            return await self.repository.update_content(content)
+        except NotFoundException as e:
+            raise e
+        except Exception as e:
+            raise InternalServerErrorException()
 
     async def delete_content(self, content_id: UUID) -> str:
         """
@@ -112,23 +118,26 @@ class CourseContentService:
         Returns:
             str: Deletion message
         """
-        # Retrieve content by ID
-        content = await self.repository.get_content_by_id(content_id)
-        if not content:
-            raise Exception("Content not found")
-        if content.content_url:
-            try:
-                public_id = content.content_url.split('/')[-1].split('.')[0]
-                print(f"Deleting video with public_id: {public_id}")
-                
-                result = cloudinary.uploader.destroy(public_id, resource_type="video")
-                
-                if result['result'] == 'ok':
-                    print("Video deleted from Cloudinary")
-            except Exception as e:
-                print(f"Error deleting video from Cloudinary: {e}")
-        await self.repository.delete_content(content)
-        return "Content deleted"
+        try:
+            # Retrieve content by ID
+            content = await self.repository.get_content_by_id(content_id)
+            if not content:
+                raise NotFoundException(detail="Content not found")
+            if content.content_url:
+                try:
+                    public_id = content.content_url.split('/')[-1].split('.')[0]
+                    result = cloudinary.uploader.destroy(public_id, resource_type="video")
+                    
+                    if result['result'] == 'ok':
+                        print("Video deleted from Cloudinary")
+                except Exception as e:
+                    raise InternalServerErrorException(detail=f"Error deleting video from Cloudinary: {e}")
+            await self.repository.delete_content(content)
+            return "Content deleted"
+        except NotFoundException as e:
+            raise e
+        except Exception as e:
+            raise InternalServerErrorException()
     
     async def get_content_by_id(self, content_id: uuid.UUID) -> CourseContentType:
         """
@@ -138,37 +147,47 @@ class CourseContentService:
         Returns:
             CourseContentType: Course content
         """
-        content = await self.repository.get_content_by_id(content_id)
-        if not content:
-            raise Exception("Content not found")
-        return CourseContentType(
-            id=content.id,
-            content_type=content.content_type,
-            content_url=content.content_url,
-            text_content=content.text_content,
-            title=content.title
-        )
-    
-    async def get_all_contents(self) -> List[CourseContentType]:
-        """
-        Get all contents
-        Returns:
-            List[CourseContentType]: List of course contents
-        """
-        contents = await self.repository.get_all_contents()
-    
-        if not contents:
-            raise Exception("No content found")
-    
-        # Map each content to the CourseContentType and return the list
-        return [
-            CourseContentType(
+        try:
+            content = await self.repository.get_content_by_id(content_id)
+            if not content:
+                raise NotFoundException(detail="Content not found")
+            return CourseContentType(
                 id=content.id,
                 content_type=content.content_type,
                 content_url=content.content_url,
                 text_content=content.text_content,
                 title=content.title
-            ) for content in contents
-        ]
-
+            )
+        except NotFoundException as e:
+            raise e
+        except Exception as e:
+            raise InternalServerErrorException()
     
+    async def get_all_contents(self, course_id: uuid.UUID) -> List[CourseContentType]:
+        """
+        Get all contents
+        Returns:
+            List[CourseContentType]: List of course contents
+        """
+
+        # THIS SERVICE HAS TO BE REFACTORED TO GET ALL CONTENTS FOR A SPECIFIC COURSE
+        try:
+            contents = await self.repository.get_all_contents()
+        
+            if not contents:
+                raise NotFoundException(detail="No content found")
+        
+            # Map each content to the CourseContentType and return the list
+            return [
+                CourseContentType(
+                    id=content.id,
+                    content_type=content.content_type,
+                    content_url=content.content_url,
+                    text_content=content.text_content,
+                    title=content.title
+                ) for content in contents
+            ]
+        except NotFoundException as e:
+            raise e
+        except Exception as e:
+            raise InternalServerErrorException()

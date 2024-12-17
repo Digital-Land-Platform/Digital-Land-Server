@@ -1,5 +1,6 @@
 import strawberry
 from typing import List
+from src.middleware.ErrorHundlers.ExceptionHundler import ExceptionHandler
 from src.graphql.property.types import PropertyType
 from .types import PropertySearchInput
 from .services import PropertySearchService
@@ -12,6 +13,7 @@ class PropertySearchQuery:
         self.service = service
 
     @strawberry.field
+    @ExceptionHandler.handle_exceptions
     async def search_properties(
         self,
         filters: PropertySearchInput,

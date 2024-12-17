@@ -1,3 +1,7 @@
+# GLOBAL IMPORTS
+from src.utils.globalVariables.globalConstant import max_duration, max_size
+
+# OTHER IMPORTS
 from src.models.Reel import Reel
 from uuid import UUID
 from src.models.repository.PropertyReelsRepository import ReelRepository
@@ -8,11 +12,17 @@ from cloudinary.uploader import upload
 from cloudinary import uploader
 from strawberry.file_uploads import Upload
 from typing import List
+from src.utils.utility import Utility
 from .types import ReelCreateInput, ReelUpdateInput
 import moviepy.editor as mp
 from pathlib import Path
 from io import BytesIO
 import tempfile
+from src.middleware.ErrorHundlers.CustomErrorHandler import (
+    BadRequestException, InternalServerErrorException, 
+    NotFoundException, UnauthorizedException
+)
+
 
 class ReelService:
     def __init__(self, db: AsyncSession):
@@ -24,15 +34,15 @@ class ReelService:
         """Validate the uploaded video file."""
         # Check if the file is in MP4 format
         if not file.filename.endswith(".mp4"):
-            raise ValueError("Invalid file format. Please upload an MP4 file.")
+            raise BadRequestException("Invalid file format. Please upload an MP4 file.")
         
        
         file_data = await file.read()  
         
         # Check the file size (e.g., max 10 MB)
-        max_size = 20 * 1024 * 1024  # 10 MB
+        # max_size = 20 * 1024 * 1024  # 10 MB
         if len(file_data) > max_size:
-            raise ValueError("File size exceeds the 10 MB limit.")
+            raise BadRequestException("File size exceeds the 10 MB limit.")
         
         
         # Create a temporary file to load and validate the video
@@ -43,14 +53,15 @@ class ReelService:
         video_file = BytesIO(file_data)
         try:
             video_clip = mp.VideoFileClip(temp_file_path)
-            max_duration = 60  
+            # max_duration = 60  
             if video_clip.duration > max_duration:
-                raise ValueError(f"Video duration exceeds the {max_duration} seconds limit.")
+                raise BadRequestException(f"Video duration exceeds the {max_duration} seconds limit.")
         finally:
             video_file.close()
         
         # Reset the file pointer to the beginning of the file    
-        file.file.seek(0)  
+        file.file.seek(0)
+
     async def upload_video_to_cloudinary(self, file: Upload) -> str:
         """Upload the video file to Cloudinary and return the URL.
         Args:
@@ -65,8 +76,8 @@ class ReelService:
             upload_result = cloudinary.uploader.upload(file.file, resource_type="video")
             return upload_result.get('secure_url')
         except cloudinary.exceptions.Error as e:
-            print(f"Cloudinary error: {e}")
-            raise Exception(f"Cloudinary error: {e}")
+            Utility.print_red(f"Cloudinary error: {e}")
+            raise InternalServerErrorException("Failed to upload video, Try again later.")
         
 
     async def create_reel(self, property_id: UUID, reel_data: ReelCreateInput) -> Reel:
@@ -80,7 +91,7 @@ class ReelService:
         
         property = await self.property_repository.get_property(property_id)
         if not property:
-            raise Exception("Property not found")
+            raise NotFoundException("Property not found")
     
         file = reel_data.file
         title = reel_data.title
@@ -90,7 +101,7 @@ class ReelService:
         try:
             # Check if the property already has the max number of reels
             if not await self.reel_repository.check_reel_limit(property_id):
-                raise Exception("Property has reached the maximum number of reels")
+                raise BadRequestException("Property has reached the maximum number of reels")
 
             # Upload video and get URL
             video_url = await self.upload_video_to_cloudinary(file)
@@ -104,8 +115,10 @@ class ReelService:
                 url=video_url
             )
             return await self.reel_repository.create_reel(reel)
+        except BadRequestException as e:
+            raise e
         except Exception as e:
-            raise Exception(f"Failed to create reel: {str(e)}")
+            raise InternalServerErrorException()
 
     async def update_reel(self, reel_id: UUID, reel_data: ReelUpdateInput) -> Reel:
         """Update an existing reel.
@@ -118,11 +131,11 @@ class ReelService:
         # Retrieve the existing reel
         reel = await self.reel_repository.get_reel_by_id(reel_id)
         if not reel:
-            raise Exception("Reel not found")
+            raise NotFoundException("Reel not found")
 
         # Validate that the current user is the creator of the reel
         if reel.creator_id != reel_data.creator_id:
-            raise Exception("You do not have permission to update this reel")
+            raise UnauthorizedException("You do not have permission to update this reel")
         
         # Only update the fields that were provided
         if reel_data.title:
@@ -141,13 +154,16 @@ class ReelService:
             # Upload the new video to Cloudinary
                 new_video_url = await self.upload_video_to_cloudinary(reel_data.file)
                 reel.url = new_video_url
+            except (NotFoundException, UnauthorizedException) as e:
+                raise e
             except Exception as e:
-                raise Exception(f"Failed to upload new video to Cloudinary: {str(e)}")
+                raise InternalServerErrorException
 
         # Update the reel in the database
         return await self.reel_repository.update_reel(reel)
 
     async def get_reels_by_property(self, property_id: UUID) -> List[Reel]:
+        # This is a bug, property has to be checked for confiming its existance
         return await self.reel_repository.get_reels_by_property(property_id)
 
     async def delete_reel(self, reel_id: UUID, creator_id: UUID) -> None:
@@ -157,24 +173,19 @@ class ReelService:
         Returns:
             bool: True if the reel was deleted successfully.
         """
-        # Retrieve the reel and check if it exists
         reel = await self.reel_repository.get_reel_by_id(reel_id)
         if not reel:
-            raise Exception("Reel not found")
+            raise NotFoundException("Reel not found")
         
-        # Validate that the current user is the creator of the reel
         if reel.creator_id != creator_id:
-            raise Exception("You do not have permission to delete this reel")
+            raise UnauthorizedException("You do not have permission to delete this reel")
 
-
-        # Extract the Cloudinary public_id from the reel's URL
         try:
             public_id = reel.url.split('/')[-1].split('.')[0]
-            # Delete the video from Cloudinary
             uploader.destroy(public_id, resource_type="video")
         except Exception as e:
-            raise Exception(f"Failed to delete video from Cloudinary: {str(e)}")
+            raise InternalServerErrorException()
 
-        # Delete the reel from the database
         await self.reel_repository.delete_reel(reel)
         return True
+    

@@ -1,4 +1,5 @@
 import strawberry
+from src.middleware.ErrorHundlers.ExceptionHundler import ExceptionHandler
 from .types import OrganizationType, OrganizationInput
 from .service import OrganizationService
 from src.models.enums.UserRole import UserRole
@@ -12,21 +13,15 @@ auth_management = AuthManagement()
 class OrganizationQuery:
 
     @strawberry.field
-    @auth_management.role_required([UserRole.ADMIN, UserRole.BROKER, UserRole.NOTARY, UserRole.USER])
+    @ExceptionHandler.handle_exceptions    
     async def get_organization(self, info, org_id: str) -> OrganizationType:
-        try:
-            organization = await organization_service.get_organization(org_id)
-            if not organization:
-                raise Exception("Organization not found")
-            return OrganizationType.from_orm(organization)
-        except Exception as e:
-            raise strawberry.exceptions.GraphQLError(f"Failed to get Organization: {e}")
+        organization = await organization_service.get_organization(org_id)
+        return OrganizationType.from_orm(organization)
 
     @strawberry.field
-    @auth_management.role_required([UserRole.ADMIN, UserRole.BROKER, UserRole.NOTARY, UserRole.USER])
+    @auth_management.isAuth()
+    @auth_management.role_required([UserRole.ADMIN])
+    @ExceptionHandler.handle_exceptions
     async def get_organizations(self, info) -> list[OrganizationType]:
-        try:
-            organizations = await organization_service.get_all_organizations()
-            return [OrganizationType.from_orm(organization) for organization in organizations]
-        except Exception as e:
-            raise strawberry.exceptions.GraphQLError(f"Failed to get Organizations: {e}")
+        organizations = await organization_service.get_all_organizations()
+        return [OrganizationType.from_orm(organization) for organization in organizations]

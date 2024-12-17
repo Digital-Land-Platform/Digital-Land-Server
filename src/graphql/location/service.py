@@ -1,8 +1,8 @@
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
+from src.middleware.ErrorHundlers.CustomErrorHandler import InternalServerErrorException
 from src.models.repository.LocationRepository import LocationRepository
 from src.models.Location import Location
-
 
 class LocationService:
 
@@ -20,7 +20,10 @@ class LocationService:
         Returns:
             Optional[Location]: The location if found, None otherwise.
         """
-        return await self.location_repo.get_location_by_id(location_id)
+        try:
+            return await self.location_repo.get_location_by_id(location_id)
+        except Exception as e:
+            raise InternalServerErrorException()
 
     async def get_all_locations(self) -> list[Location]:
         """
@@ -32,6 +35,6 @@ class LocationService:
         try:
             return await self.location_repo.get_all_locations()
         except Exception as e:
-            raise Exception(f"Failed to fetch all locations: {e}")
+            raise InternalServerErrorException()
 
     

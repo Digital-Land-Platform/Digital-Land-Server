@@ -1,6 +1,10 @@
 import strawberry
+from src.middleware.ErrorHundlers.CustomErrorHandler import (
+    BadRequestException, CustomException
+)
+from src.middleware.ErrorHundlers.ExceptionHundler import ExceptionHandler
 from .services import CourseCategoryService
-from .types import CourseCategoryCreateInput, CourseCategoryType, CourseCategoryUpdateInput
+from .types import CourseCategoryType
 from config.database import db
 from uuid import UUID
 from src.models.User import UserRole
@@ -13,8 +17,11 @@ user_service = UserService(db.SessionLocal())
 
 @strawberry.type
 class CourseCategoryMutation:
+    
     @strawberry.mutation
+    @auth_management.isAuth()
     @auth_management.role_required([UserRole.ADMIN])
+    @ExceptionHandler.handle_exceptions
     async def create_category(self, name: str, info: strawberry.types.info) -> CourseCategoryType:
         """Create a new category
         Args:
@@ -22,19 +29,19 @@ class CourseCategoryMutation:
         Returns:
             CourseCategoryType: The created category
         """
-        token = info.context["request"].headers.get("authorization").split(" ")[1]
-        #Get user info from token
-        user_info = auth_management.get_user_info(token)  
-        #Retrieve the user from the database using the email obtained from the token
-        user = await user_service.get_user_by_email(user_info.get("email"))
+        if not name or name is None:
+            raise BadRequestException("Category name is required.")
+        
         existing_category = await category_service.get_category_by_name(name)
         if existing_category:
-            raise Exception(f"Category with name '{name}' already exists.")
+            raise CustomException(status_code=409, detail=f"Category with name '{name}' already exists.")
         
         return await category_service.create_category(name)
 
     @strawberry.mutation
+    @auth_management.isAuth()
     @auth_management.role_required([UserRole.ADMIN])
+    @ExceptionHandler.handle_exceptions
     async def update_category(self, category_id: UUID, name: str, info: strawberry.types.info) -> CourseCategoryType:
         """Update a category
         Args:
@@ -44,15 +51,12 @@ class CourseCategoryMutation:
         Returns:
             CourseCategoryType: The updated category
         """
-        token = info.context["request"].headers.get("authorization").split(" ")[1]
-        #Get user info from token
-        user_info = auth_management.get_user_info(token)  
-        #Retrieve the user from the database using the email obtained from the token
-        user = await user_service.get_user_by_email(user_info.get("email"))
         return await category_service.update_category(category_id, name)
 
     @strawberry.mutation
+    @auth_management.isAuth()
     @auth_management.role_required([UserRole.ADMIN])
+    @ExceptionHandler.handle_exceptions
     async def delete_category(self, category_id: UUID, info: strawberry.types.info) -> str:
         """Delete a category
         Args:
@@ -60,9 +64,4 @@ class CourseCategoryMutation:
         Returns:
             str: A message indicating the success of the operation
         """
-        token = info.context["request"].headers.get("authorization").split(" ")[1]
-        #Get user info from token
-        user_info = auth_management.get_user_info(token)  
-        #Retrieve the user from the database using the email obtained from the token
-        user = await user_service.get_user_by_email(user_info.get("email"))
         return await category_service.delete_category(category_id)

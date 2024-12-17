@@ -55,13 +55,13 @@ class PropertyType:
     latitude: Optional[float] | None
     longitude: Optional[float] | None
     images: List[ImageTypes] | None
-    street_view_url: Optional[str] | None
-    year_built: Optional[int] | None
-    legal_status: str | None
+    streetViewUrl: Optional[str] | None
+    yearBuilt: Optional[int] | None
+    legalStatus: str | None
     disclosure: Optional[str] | None
-    energy_rating: Optional[str] | None
-    future_development_plans: Optional[str] | None
-    zoning_information: Optional[str] | None
+    energyRating: Optional[str] | None
+    futureDevelopmentPlans: Optional[str] | None
+    zoningInformation: Optional[str] | None
     amenities: List[AmenitiesType] | None
     owner_id: UUID | None
     

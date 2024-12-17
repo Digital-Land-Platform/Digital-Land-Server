@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.models.CourseContent import CourseContent
 from uuid import UUID
@@ -79,9 +80,8 @@ class CourseContentRepository:
         Returns:
             List[CourseContent]: List of all course contents
         """
+        # THIS METHOD HAS TO BE REFACTORED TO GET ALL CONTENTS FOR A SPECIFIC COURSE
+
         async with self.db as session:
             result = await session.execute(select(CourseContent))
             return result.scalars().all()  # Returns a list of all CourseContent objects
-
-
-

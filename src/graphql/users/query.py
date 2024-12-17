@@ -18,19 +18,18 @@ Attributes:
                                 the user repository.
 """
 
-from fastapi import HTTPException
-from fastapi.exceptions import RequestValidationError
 import strawberry
 from strawberry.types import Info
 from strawberry.directive import DirectiveValue
 from typing import List
+from src.middleware.ErrorHundlers.ExceptionHundler import ExceptionHandler
 from src.models.enums.UserRole import UserRole
 from src.middleware.AuthManagment import AuthManagement
 from .types import UserType
 from .services import UserService
 from config.database import db
 
-auth_managment = AuthManagement()
+auth_management = AuthManagement()
 user_service = UserService(db.SessionLocal())
 
 
@@ -54,8 +53,8 @@ class UserQuery:
     """
 
     @strawberry.field
-    @auth_managment.role_required([UserRole.ADMIN, UserRole.USER, UserRole.NOTARY])
-    @auth_managment.isAuth()
+    @auth_management.isAuth()
+    @ExceptionHandler.handle_exceptions
     async def protected_data(self, info: Info) -> DirectiveValue[str]:
         """
         Retrieves protected data for the authenticated user.
@@ -65,26 +64,21 @@ class UserQuery:
                          for the request.
 
         Returns:
-            Optional[str]: A message indicating access to protected data,
-                            including the user's name and email.
+            Optional[str]: A message indicating access to protected data.
 
         Raises:
             HTTPException: If token validation fails or if the user
                             email is not verified, a 400 status code
                             is returned.
         """
-        try:
-            user_id = info.context.get("user_id")
-            email = info.context.get("email")
-            return f"Endpoint is protected, can accessed by {user_id} {email}"
-            
-        except HTTPException as e:
-            raise strawberry.exceptions.GraphQLError(e.detail)
-        except RequestValidationError as e:
-            raise strawberry.exceptions.GraphQLError(str(e))
+        user_id = info.context.get("user_id")
+        email = info.context.get("email")
+        return f"Endpoint is protected, can't be accessed by everyone."
 
     @strawberry.field
-    @auth_managment.role_required([UserRole.ADMIN])
+    @auth_management.isAuth()
+    @auth_management.role_required([UserRole.ADMIN])
+    @ExceptionHandler.handle_exceptions
     async def get_users(self, info: Info) -> List[UserType]:
         """
         Retrieves a list of all users in the system.
@@ -98,14 +92,11 @@ class UserQuery:
         Raises:
             Exception: If there is a failure in retrieving user data from the database.
         """
-        try:
-            found_user = await user_service.get_all_users()
-            return [UserType.from_model(user) for user in found_user]
-        except Exception as e:
-            raise Exception(f"Failed to get user: {e}")
+        found_user = await user_service.get_all_users()
+        return [UserType.from_model(user) for user in found_user]
     
     @strawberry.field
-    @auth_managment.role_required([UserRole.ADMIN, UserRole.USER, UserRole.NOTARY])
+    @ExceptionHandler.handle_exceptions
     async def get_user_email(self, info:Info, email: DirectiveValue[str]) -> UserType:
         """
         Retrieves a user by their email.
@@ -119,14 +110,11 @@ class UserQuery:
         Raises:
             Exception: If there is a failure in retrieving user data from the database.
         """
-
-        try:
-            found_user = await user_service.get_user_by_email(email)
-            return UserType.from_model(found_user)
-        except Exception as e:
-            raise Exception(f"Failed to get user: {e}")
+        found_user = await user_service.get_user_by_email(email)
+        return UserType.from_model(found_user)
 
     @strawberry.field
+    @ExceptionHandler.handle_exceptions
     async def get_user_id(self, user_id: DirectiveValue[str]) -> UserType:
         """
         Retrieves a user by their ID.
@@ -140,9 +128,5 @@ class UserQuery:
         Raises:
             Exception: If there is a failure in retrieving user data from the database.
         """
-        try:
-            found_user = await user_service.get_user_by_id(user_id)
-            return UserType.from_model(found_user)
-        except Exception as e:
-            raise Exception(f"Failed to get user: {e}")
-
+        found_user = await user_service.get_user_by_id(user_id)
+        return UserType.from_model(found_user)

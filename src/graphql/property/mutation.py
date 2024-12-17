@@ -1,6 +1,8 @@
 import strawberry
 from typing import Optional, List
 from uuid import UUID
+from src.middleware.ErrorHundlers.CustomErrorHandler import CustomException
+from src.middleware.ErrorHundlers.ExceptionHundler import ExceptionHandler
 from src.models.repository.propertyRepository import PropertyRepository
 from src.models.repository.AmenityRepository import AmenityRepository
 from src.models.repository.ImageRepository import ImageRepository
@@ -26,9 +28,13 @@ user_service = UserService(db.SessionLocal())
 
 @strawberry.type
 class PropertyMutation:
+
     @strawberry.mutation
+    @auth_management.isAuth()
+    @ExceptionHandler.handle_exceptions
     async def create_property(
         self, 
+        info,
         property_input: PropertyInput,
     ) -> PropertyType:
         """
@@ -41,53 +47,50 @@ class PropertyMutation:
         Returns:
             PropertyType: The created property object.
         """
-        try:
+        #check if property exists
+        existing_property = await property_service.get_existing_property(
+            title=property_input.title,
+            location_id=property_input.location_id
+        )
             
-            #check if property exists
-            existing_property = await property_service.get_existing_property(
-                title=property_input.title,
-                location_id=property_input.location_id
-            )
-            
-            if existing_property:
-                raise Exception("A property with the same title and location already exists for this owner.")
+        if existing_property:
+            raise CustomException(status_code=409, detail="A property with the same title and location already exists for this owner.")
             
             
             # Create the property
-            property_ = await property_service.create_property(
-                property_input=property_input,
-                user_id=property_input.user_id,
-                location_id=property_input.location_id
-                
-            )
+        property_ = await property_service.create_property(
+            property_input=property_input,
+            user_id=property_input.user_id,
+            location_id=property_input.location_id
+        )
             
                         
-            return PropertyType(
-                id=property_.id,
-                title=property_.title,
-                description=property_.description,
-                price=property_.price,
-                size=property_.size,
-                status=property_.status,
-                location_id=property_input.location_id,
-                neighborhood=property_.neighborhood,
-                latitude=property_.latitude,
-                longitude=property_.longitude,
-                images=[ImageTypes(url=image.url, property_id=image.property_id) for image in property_.images],
-                streetViewUrl=property_.street_view_url,
-                amenities=[AmenitiesType(title=amenity.title, icon=amenity.icon) for amenity in property_.amenities],
-                yearBuilt=property_.year_built,
-                legalStatus=property_.legal_status,
-                disclosure=property_.disclosure,
-                energyRating=property_.energy_rating,
-                futureDevelopmentPlans=property_.future_development_plans,
-                zoningInformation=property_.zoning_information,
-                owner_id=property_.user_id
-            )
-        except Exception as e:
-            raise Exception(f"Failed to create property: {e}")
+        return PropertyType(
+            id=property_.id,
+            title=property_.title,
+            description=property_.description,
+            price=property_.price,
+            size=property_.size,
+            status=property_.status,
+            location_id=property_input.location_id,
+            neighborhood=property_.neighborhood,
+            latitude=property_.latitude,
+            longitude=property_.longitude,
+            images=[ImageTypes(url=image.url, property_id=image.property_id) for image in property_.images],
+            streetViewUrl=property_.street_view_url,
+            amenities=[AmenitiesType(title=amenity.title, icon=amenity.icon) for amenity in property_.amenities],
+            yearBuilt=property_.year_built,
+            legalStatus=property_.legal_status,
+            disclosure=property_.disclosure,
+            energyRating=property_.energy_rating,
+            futureDevelopmentPlans=property_.future_development_plans,
+            zoningInformation=property_.zoning_information,
+            owner_id=property_.user_id
+        )
 
     @strawberry.mutation
+    @auth_management.isAuth()
+    @ExceptionHandler.handle_exceptions
     async def update_property(
         self,
         id: UUID,
@@ -103,18 +106,14 @@ class PropertyMutation:
         Returns:
             PropertyType: The updated property object.
         """
-        
-        try:
-            updated_property = await property_service.update_property(
-                #id=id,
-                property_update_input=property_update_input
-            )
-        
-            if updated_property is None:
-                raise Exception("Failed to update property")
 
-            # Return the updated property data
-            return PropertyType(
+        updated_property = await property_service.update_property(
+                #id=id,
+            property_update_input=property_update_input
+        )
+    
+        # Return the updated property data
+        return PropertyType(
                 id=updated_property.id,
                 title=updated_property.title,
                 description=updated_property.description,
@@ -136,10 +135,10 @@ class PropertyMutation:
                 zoningInformation=updated_property.zoning_information,
                 owner_id=updated_property.user_id
             )
-        except Exception as e:
-            raise Exception(f"Failed to update property: {e}")
     
     @strawberry.mutation
+    @auth_management.isAuth()
+    @ExceptionHandler.handle_exceptions
     async def delete_property(self, id: UUID) -> bool:
         """
         Delete a property.

@@ -2,7 +2,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
 from src.models.Location import Location
 
-
 class LocationRepository:
 
     def __init__(self, db: AsyncSession):
@@ -15,14 +14,11 @@ class LocationRepository:
         self.db = db
     
     async def create_location(self, location: Location) -> Location:
-        try:
-            async with self.db as session:
-                session.add(location)
-                await session.commit()
-                await session.refresh(location)
-                return location
-        except Exception as e:
-            raise Exception(f"Failed to create location: {e}")
+        async with self.db as session:
+            session.add(location)
+            await session.commit()
+            await session.refresh(location)
+            return location
     
     async def get_location_by_id(self, location_id: str) -> Location:
         """
@@ -34,17 +30,14 @@ class LocationRepository:
         Returns:
             Location: The found location.
         """
-        try:
-            async with self.db:
-                async with self.db.session as session:
-                    statement = select(Location).where(Location.id == location_id)
-                    result = await session.execute(statement)
-                    location = result.scalar_one_or_none()
-                    if not location:
-                        raise Exception("Location not found")
-                    return location
-        except Exception as e:
-            raise Exception(f"Failed to fetch location by ID: {e}")
+        async with self.db:
+            async with self.db.session as session:
+                statement = select(Location).where(Location.id == location_id)
+                result = await session.execute(statement)
+                location = result.scalar_one_or_none()
+                if not location:
+                    return None
+                return location
     
     async def get_all_locations(self) -> list[Location]:
         """
@@ -53,28 +46,21 @@ class LocationRepository:
         Returns:
             list[Location]: A list of all locations.
         """
-        try:
-            async with self.db:
-                async with self.db.session as session:
-                    statement = select(Location)
-                    result = await session.execute(statement)
-                    locations = result.scalars().all()
-                    return locations
-        except Exception as e:
-            raise Exception(f"Failed to fetch all locations: {e}")
-        
-    async def delete_all_locations(self) -> bool:
-        try:
-            async with self.db as session:
+        async with self.db:
+            async with self.db.session as session:
                 statement = select(Location)
                 result = await session.execute(statement)
                 locations = result.scalars().all()
-                if not locations or len(locations) == 0:
-                    return False
-                for location in locations:
-                    await session.delete(location)
-                await session.commit()
-                return True
-        except Exception as e:
-            # await self.db.rollback()
-            raise Exception(f"Failed to delete all locations: {e}")
+                return locations
+        
+    async def delete_all_locations(self) -> bool:
+        async with self.db as session:
+            statement = select(Location)
+            result = await session.execute(statement)
+            locations = result.scalars().all()
+            if not locations or len(locations) == 0:
+                return False
+            for location in locations:
+                await session.delete(location)
+            await session.commit()
+            return True
