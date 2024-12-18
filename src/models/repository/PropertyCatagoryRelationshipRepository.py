@@ -1,6 +1,9 @@
 from typing import List
 from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 from src.models.PropertyCatagoryRelation import PropertyCatagoryRelation
+from src.models.Property import Property
+from sqlalchemy.dialects.postgresql import UUID
 
 class PropertyCatagoryRelationRepository:
 
@@ -82,3 +85,25 @@ class PropertyCatagoryRelationRepository:
                     return "Relation deleted successfully"
         except Exception as e:
             raise Exception(f"Error deleting relation: {e}")
+    
+    async def get_properties_by_category_id(self, category_id: UUID) -> List[Property]:
+        try:
+            async with self.db as session:
+                result = await session.execute(
+                    select(PropertyCatagoryRelation.property_id)
+                    .where(PropertyCatagoryRelation.catagory_id == category_id)
+                )
+                property_ids = result.scalars().all()
+                
+                if property_ids:
+                    properties_result = await session.execute(
+                        select(Property)
+                        .options(joinedload(Property.images), joinedload(Property.amenities))
+                        .where(Property.id.in_(property_ids))
+                    )
+                    properties = properties_result.scalars().unique()
+                    return properties.all() if properties else []
+                return []
+        except Exception as e:
+            raise Exception(f"Error fetching properties by category ID: {e}")
+
